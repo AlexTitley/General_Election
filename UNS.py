@@ -35,8 +35,7 @@ Calc seats
     Formula:
         Party with max(voteshare)
 '''
-
-
+from random import random
 
 ###-----------------------------------------Importing Libraries-----------------------------------------###
 import pandas as pd
@@ -142,7 +141,15 @@ def UNS(prev_election_dataset, forcast_dataset):
     return get_seats(GE29_UNS)
 
 
-
+def monte_carlo(model_outputs,iterations):
+    mc_raw = []
+    for i in range(iterations):
+        votes = []
+        for constituency in model_outputs:
+            midpoints, standard_deviations = constituency[0], constituency[1]
+            votes.append([standard_deviations[x] * np.random.randn() + midpoints[x] for x in range(len(midpoints))])
+        mc_raw.append(get_seats(votes))
+    return mc_raw
 
 
 
@@ -161,6 +168,7 @@ YouGov_all_adults_clean = np.stack((np.zeros(len(YouGov_party_names),),YouGov_al
 print(UNS(GE24_clean, YouGov_all_adults_clean))
 print(get_seats(GE24_clean))
 
+monte_carlo()
 
 
 
@@ -227,5 +235,5 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
     fig.subplots_adjust(top=0.78, bottom=0.25, left=0.02, right=0.98)
     plt.show()
 
-plot_parliament(UNS(GE24_clean, YouGov_all_adults_clean), baseline=get_seats(GE24_clean))
+#plot_parliament(UNS(GE24_clean, YouGov_all_adults_clean), baseline=get_seats(GE24_clean))
 
