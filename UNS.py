@@ -5,9 +5,8 @@ UNS Steps:
 Data:
     Dataset format:
         [0] Constituency name
-        [1] Candidate vote share
-        [2] Candidate vote count
-        [3] Main party name
+        [1] Candidate vote count
+        [2] Main party name
     Dataset 1:
         General Election Results 2024
         Notes:
@@ -88,14 +87,14 @@ def get_index(ordered_data):
     return index
 
 def get_seats(dataset):
-    constituencies_raw, voteshare_raw, party_raw = dataset[0], dataset[1], dataset[3]
+    constituencies_raw, voteshare_raw, party_raw = dataset[0], dataset[1], dataset[2]
     constituencies_index = get_index(constituencies_raw)
     seats = [party_raw[np.argmax(voteshare_raw[x[0]:x[0]+x[1]])+x[0]] for x in constituencies_index]
     unique, counts = np.unique(seats, return_counts=True)
     return unique, counts
 
 def get_party_votes(dataset):
-    parties_raw, votes_raw = dataset[3], dataset[2]
+    parties_raw, votes_raw = dataset[2], dataset[1]
     party_votes = {}
     for party, votes in zip(parties_raw,votes_raw):
         try:
@@ -128,27 +127,32 @@ def normalise_party_names(party_list):
     return(party_list_norm)
 
 
-def UNS(prev_election_dataset, forcast_dataset):
+def UNS(prev_election_dataset, forcast_dataset, raw=False, sd_vars = (0.01,0.2)):
     prev_election_votes = get_party_votes(prev_election_dataset)
     forecast_votes = get_party_votes(forcast_dataset)
     prev_election_voteshare = get_voteshare(prev_election_votes)
     forecast_voteshare = get_voteshare(forecast_votes)
     voteshare_difference = {key: forecast_voteshare.get(key,0) -  prev_election_voteshare.get(key,0) for key in prev_election_voteshare.keys() | forecast_voteshare.keys()}
-    print(voteshare_difference)
-    shifted_voteshare = [prev_election_dataset[1,x] + voteshare_difference[prev_election_dataset[3,x]] for x in range(len(prev_election_dataset[0]))]
-    GE29_UNS = np.stack((prev_election_dataset[0],  shifted_voteshare, np.zeros(len(prev_election_dataset[0]), dtype=int), prev_election_dataset[3]))
+    indexes = get_index(prev_election_dataset[0])
+    local_voteshare = np.concatenate([prev_election_dataset[1,index[0]:index[0] + index[1]] / sum(prev_election_dataset[1,index[0]:index[0] + index[1]]) for index in indexes])
+    shifted_voteshare = np.clip(np.array([local_voteshare[x] + voteshare_difference[prev_election_dataset[2,x]] for x in range(len(prev_election_dataset[1]))]),a_min=0,a_max=None)
+    if raw == True:
+        stacked_GE29_UNS = [[prev_election_dataset[0, index[0]], [shifted_voteshare[index[0]:index[0] + index[1]], np.full((np.shape(shifted_voteshare[index[0]:index[0]+index[1]])), sd_vars[0]) + np.absolute(shifted_voteshare[index[0]:index[0] + index[1]] - local_voteshare[index[0]:index[0] + index[1]]) * sd_vars[1]], list(prev_election_dataset[2, index[0]:index[0] + index[1]])] for index in indexes]
+        return stacked_GE29_UNS
+    else:
+        GE29_UNS = np.stack((prev_election_dataset[0], shifted_voteshare, prev_election_dataset[2]))
+        return get_seats(GE29_UNS)
 
-    return get_seats(GE29_UNS)
 
+def monte_carlo_raw(model_outputs,iterations):
+    names = np.concatenate([[constituency[0]] * len(constituency[2]) for constituency in model_outputs])
+    parties = np.concatenate([constituency[2] for constituency in model_outputs])
 
-def monte_carlo(model_outputs,iterations):
     mc_raw = []
     for i in range(iterations):
-        votes = []
-        for constituency in model_outputs:
-            midpoints, standard_deviations = constituency[0], constituency[1]
-            votes.append([standard_deviations[x] * np.random.randn() + midpoints[x] for x in range(len(midpoints))])
-        mc_raw.append(get_seats(votes))
+        votes = np.concatenate([constituency[1][1] * np.random.randn(len(constituency[1][0])) + constituency[1][0]
+                                for constituency in model_outputs])
+        mc_raw.append(get_seats(np.stack((names, votes, parties), dtype=object)))
     return mc_raw
 
 
@@ -156,20 +160,72 @@ def monte_carlo(model_outputs,iterations):
 
 ###-----------------------------------------Importing Data-----------------------------------------###
 GE24 = pd.read_csv('candidate-level-results-general-election-04-07-2024.csv')
-GE24_clean = np.stack((GE24['Constituency name'], GE24['Candidate vote share'], GE24['Candidate vote count'] ,normalise_party_names(GE24['Main party name'])))
+GE24_clean = np.stack((GE24['Constituency name'], GE24['Candidate vote count'] ,normalise_party_names(GE24['Main party name'])))
 
 YouGov_all_adults = pd.read_excel('voting-intention (1).xlsx', sheet_name='All adults')
 YouGov_party_names = normalise_party_names(YouGov_all_adults['Party'].iloc[:-2])
-YouGov_all_adults_clean = np.stack((np.zeros(len(YouGov_party_names),),YouGov_all_adults['2026-10-19'].iloc[:-2],np.rint(YouGov_all_adults['2026-10-19'].iloc[:-2]*YouGov_all_adults['2026-10-19'].iloc[-2]),YouGov_party_names),dtype=object)
+YouGov_all_adults_clean = np.stack((np.zeros(len(YouGov_party_names),),np.rint(YouGov_all_adults['2026-10-19'].iloc[:-2]*YouGov_all_adults['2026-10-19'].iloc[-2]),YouGov_party_names),dtype=object)
 
 
 ###-----------------------------------------Main-----------------------------------------###
+#print(UNS(GE24_clean,YouGov_all_adults_clean))
 
-print(UNS(GE24_clean, YouGov_all_adults_clean))
-print(get_seats(GE24_clean))
 
-monte_carlo()
 
+
+UNS_TEST_SET = UNS(GE24_clean, YouGov_all_adults_clean,raw=True)
+TEST = monte_carlo_raw(UNS_TEST_SET,1000)
+###-----------------------------------------Vibecoded Monte Carlo Metrics-----------------------------------------###
+all_parties = sorted({party for constituency in UNS_TEST_SET for party in constituency[2]})
+seat_counts = np.array([[dict(zip(u, c)).get(p, 0) for p in all_parties] for u, c in TEST])
+
+# 1. Which parties win elections (largest party in each simulation)
+winner_idx = seat_counts.argmax(axis=1)
+wins = np.bincount(winner_idx, minlength=len(all_parties))
+print("Elections won (largest party):")
+for p, w in zip(all_parties, wins):
+    if w > 0:
+        print(f"  {p}: {w}")
+
+print("  With a Majority: ", (seat_counts[:, all_parties.index("Labour")] >= 326).sum())
+
+# 2. Min and max seats per party across all simulations
+print("\nSeats across all simulations:")
+for p, lo, hi in zip(all_parties, seat_counts.min(axis=0), seat_counts.max(axis=0)):
+    print(f"  {p}: min {lo}, max {hi}")
+
+
+
+
+
+
+
+
+'''
+for i in range(0,10,1):
+    for j in range(5,40,5):
+        print("I:", i/100, "J:", j/100)
+        UNS_TEST_SET = UNS(GE24_clean, YouGov_all_adults_clean,raw=True,sd_vars=(i/100,j/100))
+        TEST = monte_carlo_raw(UNS_TEST_SET,1000)
+        ###-----------------------------------------Vibecoded Monte Carlo Metrics-----------------------------------------###
+        all_parties = sorted({party for constituency in UNS_TEST_SET for party in constituency[2]})
+        seat_counts = np.array([[dict(zip(u, c)).get(p, 0) for p in all_parties] for u, c in TEST])
+
+        # 1. Which parties win elections (largest party in each simulation)
+        winner_idx = seat_counts.argmax(axis=1)
+        wins = np.bincount(winner_idx, minlength=len(all_parties))
+        print("Elections won (largest party):")
+        for p, w in zip(all_parties, wins):
+            if w > 0:
+                print(f"  {p}: {w}")
+
+        print("  With a Majority: ", (seat_counts[:, all_parties.index("Labour")] >= 326).sum())
+
+        # 2. Min and max seats per party across all simulations
+        print("\nSeats across all simulations:")
+        for p, lo, hi in zip(all_parties, seat_counts.min(axis=0), seat_counts.max(axis=0)):
+            print(f"  {p}: min {lo}, max {hi}")
+'''
 
 
 
