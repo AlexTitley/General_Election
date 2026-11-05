@@ -14,14 +14,13 @@ party_naming_convention = {
     "Conservative": ["Conservative", "Con", "Cons", "Conservatives", "Conservative and Unionist", "Tory", "Tories", "con_share"],
     "Labour": ["Labour", "Lab", "Labour and Co-operative", "Labour Co-op", "Lab Co-op", "Lab/Co-op", "lab_share"],
     "Liberal Democrat": ["Liberal Democrat", "Lib Dem", "Lib Dems", "LibDem", "LibDems", "LD", "LDem", "Liberal Democrats","ld_share"],
-    "Reform UK": ["Reform UK", "Reform", "Ref", "reform_share"],
+    "Reform UK": ["Reform UK", "Reform", "Ref", "reform_share", "UK Independence Party", "UKIP", "United Kingdom Independence Party","The Brexit Party"],
     "Green Party": ["Green Party", "Green", "Greens", "Grn", "Green Party of England and Wales", "GPEW", "Scottish Green Party", "Scottish Greens", "Scottish Green", "SGP", "Green Party Northern Ireland", "Green Party NI", "green_share"],
     "Scottish National Party": ["Scottish National Party", "SNP", "Scottish Nationalist Party", "snp_pc_share"],
     "Plaid Cymru": ["Plaid Cymru", "Plaid", "PC", "Plaid Cymru - The Party of Wales", "Plaid Cymru - Party of Wales", "snp_pc_share"],
-    "UK Independence Party": ["UK Independence Party", "UKIP", "United Kingdom Independence Party"],
     "Sinn Féin": ["Sinn Féin", "Sinn Fein", "SF"],
     "Democratic Unionist Party": ["Democratic Unionist Party", "DUP", "Democratic Unionists"],
-    "Other": ["nan" ,"other_share", "Other", "Others", "Oth", "Other parties", "Minor parties", "Independent", "Independents", "Ind", "IND", "Alba Party", "Alba", "Ulster Unionist Party", "UUP", "Ulster Unionists", "Social Democratic & Labour Party", "SDLP", "Alliance Party of Northern Ireland", "Alliance", "APNI", "Alliance NI", "Your Party", 'YP', "Aontú", "Aontu", "Traditional Unionist Voice", "TUV", "Speaker", "Spk", "Speaker seeking re-election", "TUSC", "OMRLP", "Monster Raving Loony", "CPA", "WPB", "SLP", "SSP", "WEP", "AWP", "PBP", "People Before Profit", "CPB", "SDP", "BNP", "British National Party", "Yorkshire", "Yorkshire Party", "English Democrats", "EDP", "Abolish the Welsh Assembly Party", "Alliance for Democracy and Freedom", "Alliance for Green Socialism", "Animal Welfare Party", "Ashfield Independents", "Blue Revolution", "British Democratic Party", "British Unionist Party B.U.P.", "Chesterfield And North Derbyshire Independents (CANDI)", "Christian Party, Proclaiming Christ's Lordship", "Christian Peoples Alliance", "Climate Party", "Common Good", "Communist Future", "Communist League Election Campaign", "Communist Party of Britain", "Confelicity", "Consensus", "Count Binface Party", "Cross-Community Labour Alternative", "Democracy for Chorley", "English Constitution Party", "Fairer Voting Party", "Freedom Alliance", "Hampshire Independents", "Heritage Party", "Independence for Scotland Party", "Independent Alliance (Kent)", "Independent Network", "Independent Oxford Alliance", "Independents for Direct Democracy", "Kingston Independent Residents Group", "Liberal", "Libertarian Party", "Lincolnshire Independents Lincolnshire First", "Liverpool Community Independents", "National Health Action Party", "New Open Non-Political Organised Leadership", "Newham Independents Party", "Official Monster Raving Loony Party", "One Leicester", "Party of Women", "People Before Profit Alliance", "Portsmouth Independent Party", "Propel", "Psychedelic Movement", "Putting Crewe First, Independent Residents Group", "Rebooting Democracy", "Rejoin EU", "Save Us Now", "Scottish Family Party", "Scottish Libertarian Party", "Scottish Socialist Party", "Shared Ground", "Social Democratic Party", "Social Justice party", "Socialist Equality Party", "Socialist Labour Party", "Sovereignty", "South Devon Alliance", "Stockport Fights Austerity No To Cuts", "Swale Independents", "Taking The Initiative Party", "The Common People", "The Mitre TW9", "The North East Party", "The Peace Party - Non-violence, Justice, Environment", "The Socialist Party of Great Britain", "The Yorkshire Party", "The Yoruba Party in the UK", "Trade Unionist and Socialist Coalition", "Transform Party", "True & Fair Party", "UK Voice", "Volt United Kingdom", "Women's Equality Party", "Workers Party of Britain", "Workers Revolutionary Party"],
+    "Other": ["nan" ,"other_share", "Other", "Others", "Oth", "Other parties", "Minor parties", "Independent", "Independents", "Ind", "IND", "Alba Party", "Alba", "Ulster Unionist Party", "UUP", "Ulster Unionists", "Social Democratic & Labour Party", "SDLP", "Alliance Party of Northern Ireland", "Alliance", "APNI", "Alliance NI", "Your Party", 'YP', "Aontú", "Aontu", "Traditional Unionist Voice", "TUV", "Speaker", "Spk", "Speaker seeking re-election", "TUSC", "OMRLP", "Monster Raving Loony", "CPA", "WPB", "SLP", "SSP", "WEP", "AWP", "PBP", "People Before Profit", "CPB", "SDP", "BNP", "British National Party", "Yorkshire", "Yorkshire Party", "English Democrats", "EDP", "Abolish the Welsh Assembly Party", "Alliance for Democracy and Freedom", "Alliance for Green Socialism", "Animal Welfare Party", "Ashfield Independents", "Blue Revolution", "British Democratic Party", "British Unionist Party B.U.P.", "Chesterfield And North Derbyshire Independents (CANDI)", "Christian Party, Proclaiming Christ's Lordship", "Christian Peoples Alliance", "Climate Party", "Common Good", "Communist Future", "Communist League Election Campaign", "Communist Party of Britain", "Confelicity", "Consensus", "Count Binface Party", "Cross-Community Labour Alternative", "Democracy for Chorley", "English Constitution Party", "Fairer Voting Party", "Freedom Alliance", "Hampshire Independents", "Heritage Party", "Independence for Scotland Party", "Independent Alliance (Kent)", "Independent Network", "Independent Oxford Alliance", "Independents for Direct Democracy", "Kingston Independent Residents Group", "Liberal", "Libertarian Party", "Lincolnshire Independents Lincolnshire First", "Liverpool Community Independents", "National Health Action Party", "New Open Non-Political Organised Leadership", "Newham Independents Party", "Official Monster Raving Loony Party", "One Leicester", "Party of Women", "People Before Profit Alliance", "Portsmouth Independent Party", "Propel", "Psychedelic Movement", "Putting Crewe First, Independent Residents Group", "Rebooting Democracy", "Rejoin EU", "Save Us Now", "Scottish Family Party", "Scottish Libertarian Party", "Scottish Socialist Party", "Shared Ground", "Social Democratic Party", "Social Justice party", "Socialist Equality Party", "Socialist Labour Party", "Sovereignty", "South Devon Alliance", "Stockport Fights Austerity No To Cuts", "Swale Independents", "Taking The Initiative Party", "The Common People", "The Mitre TW9", "The North East Party", "The Peace Party - Non-violence, Justice, Environment", "The Socialist Party of Great Britain", "The Yorkshire Party", "The Yoruba Party in the UK", "Trade Unionist and Socialist Coalition", "Transform Party", "True & Fair Party", "UK Voice", "Volt United Kingdom", "Women's Equality Party", "Workers Party of Britain", "Workers Revolutionary Party","Young People's Party","Veterans and People's Party","The Best for Luton Party", "Advance Together","Heavy Woollen District Independents", "Birkenhead Social Justice Party", "Yeshua","Space Navies Party", "The Universal Good Party", "Renew","Church of the Militant Elvis Party", "The Independent Group for Change","Burnley and Padiham Independent Party", "Gwlad Gwlad", "Patria", "Advance Together","The Cynon Valley Party", "Communities United Party","The Justice & Anti-Corruption Party", "Young People's Party","The Citizens Movement Party UK", "Veterans and People's Party","Touch Love Worldwide (UK)", "The Best for Luton Party", "Shropshire Party","Proud of Oldham & Saddleworth", "Cumbria First","Mebyon Kernow - The Party for Cornwall", "Motherworld Party","Wycombe Independents", "The Constitution and Reform Party"],
 }
 
 
@@ -84,7 +83,8 @@ def normalise_party_names(party_list):
     return(party_list_norm)
 
 
-def UNS(prev_election_dataset, forcast_dataset, raw=False, sd_vars = (0.01,0.2)):
+def UNS(prev_election_dataset, forcast_dataset, raw=False, sd_vars=(0.01,0.2)): #sd_vars=(0.01,0.2) sd_vars = (0,0)
+
     prev_election_votes = get_party_votes(prev_election_dataset)
     forecast_votes = get_party_votes(forcast_dataset)
     prev_election_voteshare = get_voteshare(prev_election_votes)
@@ -93,9 +93,9 @@ def UNS(prev_election_dataset, forcast_dataset, raw=False, sd_vars = (0.01,0.2))
     indexes = get_index(prev_election_dataset[0])
     local_voteshare = np.concatenate([prev_election_dataset[1,index[0]:index[0] + index[1]] / sum(prev_election_dataset[1,index[0]:index[0] + index[1]]) for index in indexes])
     shifted_voteshare = np.clip(np.array([local_voteshare[x] + voteshare_difference[prev_election_dataset[2,x]] for x in range(len(prev_election_dataset[1]))]),a_min=0,a_max=None)
+    print(shifted_voteshare)
     if raw == True:
         stacked_GE29_UNS = [[prev_election_dataset[0, index[0]], [shifted_voteshare[index[0]:index[0] + index[1]], np.full((np.shape(shifted_voteshare[index[0]:index[0]+index[1]])), sd_vars[0]) + np.absolute(shifted_voteshare[index[0]:index[0] + index[1]] - local_voteshare[index[0]:index[0] + index[1]]) * sd_vars[1]], list(prev_election_dataset[2, index[0]:index[0] + index[1]])] for index in indexes]
-        print(np.dtype(stacked_GE29_UNS))
         return stacked_GE29_UNS
     else:
         GE29_UNS = np.stack((prev_election_dataset[0], shifted_voteshare, prev_election_dataset[2]))
@@ -164,12 +164,6 @@ def random_forest(dataset):
 
     future_preds_variance = np.zeros(np.shape(future_preds_normalized))
     constituency_names = df['name'] + df['year'].astype(str)
-    '''
-    print(len(constituency_names))
-    print(len(future_preds_normalized))
-    print(len(future_preds_variance))
-    print(len(party_names_out))
-    '''
     output = [[constituency_names[x], [future_preds_normalized[x], np.full(np.shape(future_preds_normalized[x]), mae)],party_names_normalised] for x in range(len(future_preds_normalized))]
     return(output)
 
@@ -178,10 +172,23 @@ def random_forest(dataset):
 GE24 = pd.read_csv('candidate-level-results-general-election-04-07-2024.csv')
 GE24_clean = np.stack((GE24['Constituency name'], GE24['Candidate vote count'] ,normalise_party_names(GE24['Main party name'])))
 
+
+
+GE19 = pd.read_csv('HoC-GE2019-results-by-candidate.csv')
+GE19_clean = np.stack((GE19['Constituency name'], GE19['Votes'] ,normalise_party_names(GE19['Party name'])))
+
+
+
+
 YouGov_all_adults = pd.read_excel('voting-intention (1).xlsx', sheet_name='All adults')
 YouGov_party_names = normalise_party_names(YouGov_all_adults['Party'].iloc[:-2])
 YouGov_all_adults_clean = np.stack((np.zeros(len(YouGov_party_names),),np.rint(YouGov_all_adults['2026-10-19'].iloc[:-2]*YouGov_all_adults['2026-10-19'].iloc[-2]),YouGov_party_names),dtype=object)
 
+
+
+youGov_19_24_all_adults = pd.read_excel('voting-intention-2019-2024 (1).xlsx', sheet_name='All adults')
+youGov_19_24_party_names = normalise_party_names(youGov_19_24_all_adults['If there were a general election held tomorrow, which party would you vote for?'].iloc[:-2])
+youGov_19_24_all_adults_clean = np.stack((np.zeros(len(youGov_19_24_party_names),),np.rint(youGov_19_24_all_adults['2024-07-03'].iloc[:-2]*youGov_19_24_all_adults['2024-07-03'].iloc[-2]),youGov_19_24_party_names),dtype=object)
 
 
 collected_data = pd.read_csv("train_test_dataset.csv")                                       # Preparing the data into X feature matrix and y target vectors
@@ -194,16 +201,16 @@ collected_data['prev_winner_encoded'] = encoded_prev_winner.fit_transform(collec
 
 
 
-TEST_SET = random_forest(collected_data)[-631:]
-TEST = monte_carlo_raw(TEST_SET,1000)
+#TEST_SET = random_forest(collected_data)[-631:]
+#TEST = monte_carlo_raw(TEST_SET,1000)
 
 
 
 
 #print(UNS(GE24_clean,YouGov_all_adults_clean,raw=True))
 
-#TEST_SET = UNS(GE24_clean, YouGov_all_adults_clean,raw=True)
-#TEST = monte_carlo_raw(TEST_SET,1)
+TEST_SET = UNS(GE19_clean, youGov_19_24_all_adults_clean,  raw=True)
+TEST = monte_carlo_raw(TEST_SET,1000)
 ###-----------------------------------------Vibecoded Monte Carlo Metrics-----------------------------------------###
 all_parties = sorted({party for constituency in TEST_SET for party in constituency[2]})
 seat_counts = np.array([[dict(zip(u, c)).get(p, 0) for p in all_parties] for u, c in TEST])
