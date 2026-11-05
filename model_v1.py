@@ -60,7 +60,7 @@ if 'green_stood' in X_test.columns:
 test_preds_normalized = test_preds_df.div(test_preds_df.sum(axis=1), axis=0)
 
 # Calculating Mean Absolute Error (MAE) to use in monte carlo simulation
-mae = mean_absolute_error(y_test, test_preds_normalized)
+mae = mean_absolute_error(y_test/100, test_preds_normalized)
 print(f"Mean Absolute Error: {mae:.4f} (percentage points)")
 
 # Preparing data for the prediction year
@@ -134,6 +134,7 @@ final_forecast['forecasted_winner'] = win_probabilities.idxmax(axis=1).apply(
 
 print("\nFinal Forecast Preview:")
 print(final_forecast[['name', 'forecasted_winner', 'prob_win_con', 'prob_win_lab', 'prob_win_ld']].head())
+
 
 final_forecast.to_csv("election_forecast_with_probabilities.csv", index=False)
 print("\nSuccess! Saved to 'election_forecast_with_probabilities.csv'.")
