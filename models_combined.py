@@ -143,11 +143,12 @@ PARAM_GRID = {
 }
 
 
-def random_forest(dataset):
+def random_forest(dataset,backtest=False):
     df = dataset
     # (y) - the target columns
     target_cols = ['con_share', 'lab_share', 'ld_share', 'snp_pc_share', 'reform_share', 'green_share', 'other_share']
     y = df[target_cols]
+    party_names_normalised = normalise_party_names(target_cols)
     # Features to be used in the model - make sure to match it with both CSV files
     feature_cols = ['year', 'boundary_set', 'region_encoded', 'prev_winner_encoded',
                     'prev_con_share', 'prev_lab_share', 'prev_ld_share', 'prev_snp_pc_share',
@@ -195,6 +196,15 @@ def random_forest(dataset):
     # Calculating Mean Absolute Error (MAE) to use in monte carlo simulation
     mae = mean_absolute_error(y_test/100, test_preds_normalized)
     print(f"Mean Absolute Error on {holdout_year} hold-out: {mae:.4f} (share, 0-1 scale)")
+
+    if backtest:
+        backtest_shares = test_preds_normalized.to_numpy()
+        backtest_names = (df.loc[X_test.index, 'name'] + df.loc[X_test.index, 'year'].astype(str)).to_numpy()
+        backtest_output = [[backtest_names[x], [backtest_shares[x], np.full(len(target_cols), mae)], party_names_normalised] for x in range(len(backtest_shares))]
+
+
+
+
     # Refit the tuned model on every election (including the hold-out year) for the forecast
     model = RandomForestRegressor(**grid.best_params_, random_state=42, n_jobs=-1)
     model.fit(X, y)
@@ -208,21 +218,18 @@ def random_forest(dataset):
     future_raw_preds = model.predict(X_future)
     future_preds_df = pd.DataFrame(future_raw_preds, columns=target_cols, index=future_df.index)
     # Normalising future predictions to sum to 1.0 (100%)
-    party_names_normalised = normalise_party_names(target_cols)
     party_names_out = [party_names_normalised for x in range(df.shape[0])]
     future_preds_normalized = future_preds_df.div(future_preds_df.sum(axis=1), axis=0).to_numpy()
     #prep for return
 
     future_preds_variance = np.zeros(np.shape(future_preds_normalized))
     constituency_names = future_df['name'] + future_df['year'].astype(str)
-    '''
-    print(len(constituency_names))
-    print(len(future_preds_normalized))
-    print(len(future_preds_variance))
-    print(len(party_names_out))
-    '''
     output = [[constituency_names[x], [future_preds_normalized[x], np.full(np.shape(future_preds_normalized[x]), mae)],party_names_normalised] for x in range(len(future_preds_normalized))]
-    return(output)
+
+    if backtest:
+        return(backtest_output)
+    else:
+        return(output)
 
 
 ###-----------------------------------------Importing Data-----------------------------------------###
@@ -261,7 +268,7 @@ collected_data['prev_winner_encoded'] = encoded_prev_winner.fit_transform(collec
 
 TESTS = []
 
-TEST_SET = random_forest(collected_data)[-631:]
+TEST_SET = random_forest(collected_data,backtest=True)[-631:]
 TESTS.append(monte_carlo_raw(TEST_SET,1000))
 
 
@@ -272,7 +279,6 @@ TESTS.append(monte_carlo_raw(TEST_SET,1000,national_sd=NATIONAL_SDS))
 
 TEST_SET, NATIONAL_SDS = UNS(GE19_clean, YouGov_19_24_all_adults_clean,YouGov_19_24_samplesize,  raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000,national_sd=NATIONAL_SDS))
-###-----------------------------------------Vibecoded Monte Carlo Metrics-----------------------------------------###
 ###-----------------------------------------Metrics (temporary AI-generated block)-----------------------------------------###
 
 MODEL_NAMES = ["RF 2024 backtest", "UNS: 2024 result + YouGov Oct 2026", "UNS: 2019 result + YouGov Jul 2024 (backtest)"]   # same order as TESTS

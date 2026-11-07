@@ -215,12 +215,6 @@ def random_forest(dataset):
 
     future_preds_variance = np.zeros(np.shape(future_preds_normalized))
     constituency_names = future_df['name'] + future_df['year'].astype(str)
-    '''
-    print(len(constituency_names))
-    print(len(future_preds_normalized))
-    print(len(future_preds_variance))
-    print(len(party_names_out))
-    '''
     output = [[constituency_names[x], [future_preds_normalized[x], np.full(np.shape(future_preds_normalized[x]), mae)],party_names_normalised] for x in range(len(future_preds_normalized))]
     return(output)
 
