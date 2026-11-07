@@ -83,7 +83,7 @@ def normalise_party_names(party_list):
     return(party_list_norm)
 
 
-def UNS(prev_election_dataset, forcast_dataset,forecast_sample_size, raw=False, local_sd= 0.05, systematic_sd=0.02): #sd_vars=(0.01,0.2) sd_vars = (0,0)
+def Uniform_Swing(prev_election_dataset, forcast_dataset,forecast_sample_size, raw=False, local_sd= 0.05, systematic_sd=0.02): #sd_vars=(0.01,0.2) sd_vars = (0,0)
     prev_election_votes = get_party_votes(prev_election_dataset)
     forecast_votes = get_party_votes(forcast_dataset)
     prev_election_voteshare = get_voteshare(prev_election_votes)
@@ -94,11 +94,11 @@ def UNS(prev_election_dataset, forcast_dataset,forecast_sample_size, raw=False, 
     shifted_voteshare = np.clip(np.array([local_voteshare[x] + voteshare_difference[prev_election_dataset[2,x]] for x in range(len(prev_election_dataset[1]))]),a_min=0,a_max=None)
     national_sampling_error = {party: np.sqrt((voteshare *(1-voteshare)/ forecast_sample_size) + systematic_sd ** 2) for party,voteshare in forecast_voteshare.items()}                                                        #https://eprints.soton.ac.uk/id/eprint/421260/1/JenningsWlezien_PollingErrors.pdf
     if raw == True:
-        stacked_GE29_UNS = [[prev_election_dataset[0, index[0]], [shifted_voteshare[index[0]:index[0] + index[1]], np.full(np.shape(shifted_voteshare[index[0]:index[0]+index[1]]), local_sd)], list(prev_election_dataset[2, index[0]:index[0] + index[1]])] for index in indexes]
-        return stacked_GE29_UNS,national_sampling_error
+        stacked_output = [[prev_election_dataset[0, index[0]], [shifted_voteshare[index[0]:index[0] + index[1]], np.full(np.shape(shifted_voteshare[index[0]:index[0]+index[1]]), local_sd)], list(prev_election_dataset[2, index[0]:index[0] + index[1]])] for index in indexes]
+        return stacked_output,national_sampling_error
     else:
-        GE29_UNS = np.stack((prev_election_dataset[0], shifted_voteshare, prev_election_dataset[2]))
-        return get_seats(GE29_UNS)
+        output = np.stack((prev_election_dataset[0], shifted_voteshare, prev_election_dataset[2]))
+        return get_seats(output)
 
 
 def monte_carlo_raw(model_outputs,iterations,national_sd={}):
@@ -143,11 +143,12 @@ PARAM_GRID = {
 }
 
 
-def random_forest(dataset):
+def random_forest(dataset,backtest=False):
     df = dataset
     # (y) - the target columns
     target_cols = ['con_share', 'lab_share', 'ld_share', 'snp_pc_share', 'reform_share', 'green_share', 'other_share']
     y = df[target_cols]
+    party_names_normalised = normalise_party_names(target_cols)
     # Features to be used in the model - make sure to match it with both CSV files
     feature_cols = ['year', 'boundary_set', 'region_encoded', 'prev_winner_encoded',
                     'prev_con_share', 'prev_lab_share', 'prev_ld_share', 'prev_snp_pc_share',
@@ -195,6 +196,15 @@ def random_forest(dataset):
     # Calculating Mean Absolute Error (MAE) to use in monte carlo simulation
     mae = mean_absolute_error(y_test/100, test_preds_normalized)
     print(f"Mean Absolute Error on {holdout_year} hold-out: {mae:.4f} (share, 0-1 scale)")
+
+    if backtest:
+        backtest_shares = test_preds_normalized.to_numpy()
+        backtest_names = (df.loc[X_test.index, 'name'] + df.loc[X_test.index, 'year'].astype(str)).to_numpy()
+        backtest_output = [[backtest_names[x], [backtest_shares[x], np.full(len(target_cols), mae)], party_names_normalised] for x in range(len(backtest_shares))]
+
+
+
+
     # Refit the tuned model on every election (including the hold-out year) for the forecast
     model = RandomForestRegressor(**grid.best_params_, random_state=42, n_jobs=-1)
     model.fit(X, y)
@@ -208,7 +218,6 @@ def random_forest(dataset):
     future_raw_preds = model.predict(X_future)
     future_preds_df = pd.DataFrame(future_raw_preds, columns=target_cols, index=future_df.index)
     # Normalising future predictions to sum to 1.0 (100%)
-    party_names_normalised = normalise_party_names(target_cols)
     party_names_out = [party_names_normalised for x in range(df.shape[0])]
     future_preds_normalized = future_preds_df.div(future_preds_df.sum(axis=1), axis=0).to_numpy()
     #prep for return
@@ -216,7 +225,11 @@ def random_forest(dataset):
     future_preds_variance = np.zeros(np.shape(future_preds_normalized))
     constituency_names = future_df['name'] + future_df['year'].astype(str)
     output = [[constituency_names[x], [future_preds_normalized[x], np.full(np.shape(future_preds_normalized[x]), mae)],party_names_normalised] for x in range(len(future_preds_normalized))]
-    return(output)
+
+    if backtest:
+        return(backtest_output)
+    else:
+        return(output)
 
 
 ###-----------------------------------------Importing Data-----------------------------------------###
@@ -255,18 +268,17 @@ collected_data['prev_winner_encoded'] = encoded_prev_winner.fit_transform(collec
 
 TESTS = []
 
-TEST_SET = random_forest(collected_data)[-631:]
+TEST_SET = random_forest(collected_data,backtest=True)[-631:]
 TESTS.append(monte_carlo_raw(TEST_SET,1000))
 
 
 
-TEST_SET, NATIONAL_SDS = UNS(GE24_clean, YouGov_all_adults_clean,YouGov_samplesize,  raw=True)
+TEST_SET, NATIONAL_SDS = Uniform_Swing(GE24_clean, YouGov_all_adults_clean,YouGov_samplesize,  raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000,national_sd=NATIONAL_SDS))
-#print(UNS(GE24_clean,YouGov_all_adults_clean,raw=True))
+#print(Uniform_Swing(GE24_clean,YouGov_all_adults_clean,raw=True))
 
-TEST_SET, NATIONAL_SDS = UNS(GE19_clean, YouGov_19_24_all_adults_clean,YouGov_19_24_samplesize,  raw=True)
+TEST_SET, NATIONAL_SDS = Uniform_Swing(GE19_clean, YouGov_19_24_all_adults_clean,YouGov_19_24_samplesize,  raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000,national_sd=NATIONAL_SDS))
-###-----------------------------------------Vibecoded Monte Carlo Metrics-----------------------------------------###
 ###-----------------------------------------Metrics (temporary AI-generated block)-----------------------------------------###
 
 MODEL_NAMES = ["RF 2024 backtest", "UNS: 2024 result + YouGov Oct 2026", "UNS: 2019 result + YouGov Jul 2024 (backtest)"]   # same order as TESTS
@@ -301,46 +313,6 @@ for TEST, name in zip(TESTS, MODEL_NAMES):
     has_majority = seats >= majority
     print("Single-party majority: " + (", ".join(f"{parties[i]} {has_majority[:, i].mean():.1%}" for i in range(len(parties)) if has_majority[:, i].any()) or "none"))
     print(f"Hung parliament: {(~has_majority.any(axis=1)).mean():.1%}")
-
-
-
-
-
-'''
-for i in range(0,10,1):
-    for j in range(5,40,5):
-        print("I:", i/100, "J:", j/100)
-        UNS_TEST_SET = UNS(GE24_clean, YouGov_all_adults_clean,raw=True,sd_vars=(i/100,j/100))
-        TEST = monte_carlo_raw(UNS_TEST_SET,1000)
-        ###-----------------------------------------Vibecoded Monte Carlo Metrics-----------------------------------------###
-        all_parties = sorted({party for constituency in UNS_TEST_SET for party in constituency[2]})
-        seat_counts = np.array([[dict(zip(u, c)).get(p, 0) for p in all_parties] for u, c in TEST])
-
-        # 1. Which parties win elections (largest party in each simulation)
-        winner_idx = seat_counts.argmax(axis=1)
-        wins = np.bincount(winner_idx, minlength=len(all_parties))
-        print("Elections won (largest party):")
-        for p, w in zip(all_parties, wins):
-            if w > 0:
-                print(f"  {p}: {w}")
-
-        print("  With a Majority: ", (seat_counts[:, all_parties.index("Labour")] >= 326).sum())
-
-        # 2. Min and max seats per party across all simulations
-        print("\nSeats across all simulations:")
-        for p, lo, hi in zip(all_parties, seat_counts.min(axis=0), seat_counts.max(axis=0)):
-            print(f"  {p}: min {lo}, max {hi}")
-'''
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -396,5 +368,5 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
     fig.subplots_adjust(top=0.78, bottom=0.25, left=0.02, right=0.98)
     plt.show()
 
-#plot_parliament(UNS(GE24_clean, YouGov_all_adults_clean), baseline=get_seats(GE24_clean))
+#plot_parliament(Uniform_Swing(GE24_clean, YouGov_all_adults_clean), baseline=get_seats(GE24_clean))
 
