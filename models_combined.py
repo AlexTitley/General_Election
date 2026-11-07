@@ -2,10 +2,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import GridSearchCV
+
 
 
 
@@ -118,6 +120,29 @@ def monte_carlo_raw(model_outputs,iterations,national_sd={}):
         mc_raw.append(get_seats(np.stack((names, voteshares, parties), dtype=object)))
     return mc_raw
 
+def year_based_time_series_cv(years, n_splits=3):
+    """TimeSeriesSplit applied to election *years* rather than rows, so every fold
+    trains on whole earlier elections and validates on the next whole election
+    (no constituency rows from the same election leak across the split).
+    Returns a list of (train_idx, test_idx) positional index pairs for GridSearchCV."""
+    years = pd.Series(np.asarray(years))
+    unique_years = np.sort(years.unique())
+    splits = []
+    for train_y, test_y in TimeSeriesSplit(n_splits=n_splits).split(unique_years):
+        train_idx = np.where(years.isin(unique_years[train_y]))[0]
+        test_idx = np.where(years.isin(unique_years[test_y]))[0]
+        splits.append((train_idx, test_idx))
+    return splits
+
+
+PARAM_GRID = {
+    'n_estimators': [200, 500],
+    'max_depth': [None, 10, 20],
+    'min_samples_leaf': [1, 3, 5],
+    'max_features': ['sqrt', 0.5, 1.0],
+}
+
+
 def random_forest(dataset):
     df = dataset
     # (y) - the target columns
@@ -134,23 +159,45 @@ def random_forest(dataset):
                     'house_price_rel', 'income_rel', 'employment_rel',
                     'pop_0_15_rel', 'pop_16_64_rel', 'pop_65_plus_rel']
     X = df[feature_cols]
-    # Training and testing the model
-    # Data split (80% for training, 20% for testing)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    model = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
-    model.fit(X_train, y_train)
-    # Evaluate on test set
+    # Time-aware split: the most recent election is held out as the final test set,
+    # and hyperparameters are tuned only on the elections before it.
+    holdout_year = df['year'].max()
+    dev_mask = (df['year'] < holdout_year).to_numpy()
+    X_dev, y_dev = X[dev_mask], y[dev_mask]
+    X_test, y_test = X[~dev_mask], y[~dev_mask]
+
+    # GridSearchCV with expanding-window (TimeSeriesSplit) folds over election years
+    cv_splits = year_based_time_series_cv(df.loc[dev_mask, 'year'], n_splits=3)
+    grid = GridSearchCV(
+        # n_jobs=1 on the forest, parallelism is handled by GridSearchCV
+        estimator=RandomForestRegressor(random_state=42, n_jobs=1),
+        param_grid=PARAM_GRID,
+        cv=cv_splits,
+        scoring='neg_mean_absolute_error',
+        n_jobs=-1,
+        refit=True,
+        verbose=1,
+    )
+    grid.fit(X_dev, y_dev)
+    print(f"Best params: {grid.best_params_}")
+    print(f"Best CV MAE (time-series folds, raw %-point shares): {-grid.best_score_:.4f}")
+    model = grid.best_estimator_
+    # Evaluate on the held-out election
     raw_test_preds = model.predict(X_test)
     test_preds_df = pd.DataFrame(raw_test_preds, columns=target_cols, index=X_test.index)
     # If reform/green party stood in the constituency then the share is multiplied by 1, if not stood then share is multiplied by 0
     if 'reform_stood' in X_test.columns:
-        test_preds_df['reform_share'] = test_preds_df['reform_share'] * X_test['reform_stood']
+        test_preds_df['reform_share'] = test_preds_df['reform_share'] * df.loc[X_test.index, 'reform_stood']
     if 'green_stood' in X_test.columns:
-        test_preds_df['green_share'] = test_preds_df['green_share'] * X_test['green_stood']
+        test_preds_df['green_share'] = test_preds_df['green_share'] * df.loc[X_test.index, 'green_stood']
     # Normalising test predictions to sum to 1.0 (100%)
     test_preds_normalized = test_preds_df.div(test_preds_df.sum(axis=1), axis=0)
     # Calculating Mean Absolute Error (MAE) to use in monte carlo simulation
     mae = mean_absolute_error(y_test/100, test_preds_normalized)
+    print(f"Mean Absolute Error on {holdout_year} hold-out: {mae:.4f} (share, 0-1 scale)")
+    # Refit the tuned model on every election (including the hold-out year) for the forecast
+    model = RandomForestRegressor(**grid.best_params_, random_state=42, n_jobs=-1)
+    model.fit(X, y)
     # Preparing data for the prediction year
     future_df = pd.read_csv("prediction_dataset.csv")
     future_df['region_encoded'] = encoded_region.transform(future_df['region'])
@@ -167,7 +214,13 @@ def random_forest(dataset):
     #prep for return
 
     future_preds_variance = np.zeros(np.shape(future_preds_normalized))
-    constituency_names = df['name'] + df['year'].astype(str)
+    constituency_names = future_df['name'] + future_df['year'].astype(str)
+    '''
+    print(len(constituency_names))
+    print(len(future_preds_normalized))
+    print(len(future_preds_variance))
+    print(len(party_names_out))
+    '''
     output = [[constituency_names[x], [future_preds_normalized[x], np.full(np.shape(future_preds_normalized[x]), mae)],party_names_normalised] for x in range(len(future_preds_normalized))]
     return(output)
 
