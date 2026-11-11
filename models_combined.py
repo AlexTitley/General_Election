@@ -406,6 +406,116 @@ COLOURS = {"Labour": "#C8374A", "Conservative": "#4A84D4", "Liberal Democrat": "
            "Others & NI": "#9EA3AB", "Plaid Cymru": "#468B78", "Green Party": "#5BAA6A"}
 MAJOR = {"Labour", "Conservative", "Liberal Democrat", "Reform UK", "Scottish National Party",
          "Plaid Cymru", "Green Party"}
+# actual monte carlo graphs 
+mean = seat_counts.mean(axis=0)
+lo, hi = np.percentile(seat_counts, [5, 95], axis=0)
+order = [i for i in np.argsort(mean)[::-1] if hi[i] > 0]
+names = [all_parties[i] for i in order]
+
+err_lo = np.clip(mean - lo, 0, None)
+err_hi = np.clip(hi - mean, 0, None)
+
+det_parties, det_seats = UNS(GE24_clean, YouGov_all_adults_clean, raw=False)
+det = dict(zip(det_parties, det_seats))
+det_vals = [det.get(p, 0) for p in names]   
+
+fig, ax = plt.subplots(figsize=(12, 5))
+bars = ax.bar(names, mean[order],
+              yerr=[(err_lo)[order], (err_hi)[order]],   # lower and upper error lengths
+              capsize=5,
+              color=[COLOURS.get(p, "#9EA3AB") for p in names])
+
+ax.scatter(names, det_vals, color="black", marker="D", s=50, zorder=3,
+           label="Plain UNS (no simulation)")
+
+ax.legend()
+
+x = np.arange(len(names))
+w = 0.4
+
+ax.bar(x - w/2, mean[order], w, yerr=[err_lo[order], err_hi[order]], capsize=5,
+       color=[COLOURS.get(p, "#9EA3AB") for p in names], label="Monte Carlo mean")
+ax.bar(x + w/2, det_vals, w, color="grey", label="Plain UNS")
+
+ax.set_xticks(x)
+ax.set_xticklabels(names, rotation=45, ha="right")
+ax.legend()
+
+ax.axhline(326, color="black", linestyle="--", linewidth=1)
+ax.text(len(names) - 0.5, 330, "326 for a majority", ha="right", fontsize=8)
+for bar, m in zip(bars, mean[order]):
+    ax.text(bar.get_x() + bar.get_width()/2, 5, f"{m:.0f}", ha="center", color="white", fontweight="bold")
+
+ax.set_xlabel("Party")
+ax.set_ylabel("Seats")
+ax.set_title("Simulated seats by party (mean and 5th-95th percentile, 1000 runs)")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+
+# stats to make: hung parliament, coalition, overlay normal UNS onto monte carlo, individual seats; most marginal seats, safe seats (non contestable), which seats decide whether a pary crosses 326 
+hung = (seat_counts.max(axis=1) < 326).mean()
+print(f"Hung parliament in {hung*100:.1f}% of runs")
+
+parties_to_check = [p for p in ORDER if p in all_parties]
+for i, p in enumerate(parties_to_check):
+    for q in parties_to_check[i+1:]:
+        a, b = all_parties.index(p), all_parties.index(q)
+        pair = (seat_counts[:, a] + seat_counts[:, b])
+        need = (pair >= 326) & (seat_counts[:, a]<326) & (seat_counts[:,b]<326)
+        prob = need.mean()
+        if prob > 0.01:
+            print(f"{p} + {q}: {prob*100:.1f}%")
+
+def get_winners(dataset):
+    constituencies_raw, voteshare_raw, party_raw = dataset[0], dataset[1], dataset[2]
+    constituencies_index = get_index(constituencies_raw)
+    return [party_raw[np.argmax(voteshare_raw[x[0]:x[0]+x[1]])+x[0]] for x in constituencies_index]
+
+def monte_carlo_winners(model_outputs,iterations):
+    names = np.concatenate([[constituency[0]] * len(constituency[2]) for constituency in model_outputs])
+    parties = np.concatenate([constituency[2] for constituency in model_outputs])
+
+    all_winners = []
+    for _ in range(iterations):
+        votes = np.concatenate([constituency[1][1] * np.random.randn(len(constituency[1][0])) + constituency[1][0]
+                                for constituency in model_outputs])
+        all_winners.append(get_winners(np.stack((names, votes, parties), dtype=object)))
+    return np.array(all_winners)
+
+winners = monte_carlo_winners(UNS_TEST_SET, 1000)
+seat_names = [c[0] for c in UNS_TEST_SET]
+
+winner_parties = sorted(set(winners.flatten()))
+
+win_prob = np.array([[(winners[:, s] == p).mean() for p in winner_parties]
+                     for s in range(winners.shape[1])])  
+
+prob_const = pd.DataFrame(win_prob, index=seat_names, columns=winner_parties)
+most_likely = win_prob.max(axis=1)
+most_likely_party = [winner_parties[i] for i in win_prob.argmax(axis=1)]
+marginal = [(seat_names[s], most_likely_party[s], most_likely[s])
+            for s in range(len(seat_names)) if most_likely[s] < 0.7]
+marginal.sort(key=lambda r: r[2])
+for name, party, prob in marginal[:20]:
+    print(f"{name}: {party} {prob*100:.0f}%")
+
+print("Toss-ups (<50%):",      (most_likely < 0.50).sum())
+print("Marginal (50-70%):",    ((most_likely >= 0.50) & (most_likely < 0.70)).sum())
+print("Leaning (70-95%):",     ((most_likely >= 0.70) & (most_likely < 0.95)).sum())
+print("Safe (>=95%):",         (most_likely >= 0.95).sum())
+
+marginal_cons = np.array(seat_names)[most_likely < 0.5].tolist()
+print('Toss up seats (0.5<):', marginal_cons)
+
+margins = []
+for c in UNS_TEST_SET:
+    s = np.sort(c[1][0])[::-1]
+    margins.append(s[0] - s[1] if len(s) > 1 else 1)
+margins = np.array(margins)
+
+print((margins < 0.02).sum(), "seats with a lead under 2 points")
+print((margins < 0.05).sum(), "seats with a lead under 5 points")
 
 def group_seats(parties, seats):
     """Merge every party not in MAJOR into 'Others & NI'."""
