@@ -157,7 +157,7 @@ def monte_carlo_raw(model_outputs,iterations):
 
 
 ###-----------------------------------------Importing Data-----------------------------------------###
-GE24 = pd.read_csv('candidate-level-results-general-election-04-07-2024.csv')
+GE24 = pd.read_csv('../candidate-level-results-general-election-04-07-2024.csv')
 GE24_clean = np.stack((GE24['Constituency name'], GE24['Candidate vote count'] ,normalise_party_names(GE24['Main party name'])))
 
 YouGov_all_adults = pd.read_excel('voting-intention (1).xlsx', sheet_name='All adults')

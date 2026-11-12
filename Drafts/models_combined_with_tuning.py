@@ -209,7 +209,7 @@ def random_forest(dataset,backtest=False):
     model = RandomForestRegressor(**grid.best_params_, random_state=42, n_jobs=-1)
     model.fit(X, y)
     # Preparing data for the prediction year
-    future_df = pd.read_csv("prediction_dataset.csv")
+    future_df = pd.read_csv("../prediction_dataset.csv")
     future_df['region_encoded'] = encoded_region.transform(future_df['region'])
     future_df['prev_winner_encoded'] = encoded_prev_winner.transform(future_df['prev_winner'])
     X_future = future_df[feature_cols]
@@ -233,12 +233,12 @@ def random_forest(dataset,backtest=False):
 
 
 ###-----------------------------------------Importing Data-----------------------------------------###
-GE24 = pd.read_csv('candidate-level-results-general-election-04-07-2024.csv')
+GE24 = pd.read_csv('../candidate-level-results-general-election-04-07-2024.csv')
 GE24_clean = np.stack((GE24['Constituency name'], GE24['Candidate vote count'] ,normalise_party_names(GE24['Main party name'])))
 
 
 
-GE19 = pd.read_csv('HoC-GE2019-results-by-candidate.csv')
+GE19 = pd.read_csv('../HoC-GE2019-results-by-candidate.csv')
 GE19_clean = np.stack((GE19['Constituency name'], GE19['Votes'] ,normalise_party_names(GE19['Party name'])))
 
 
@@ -258,7 +258,7 @@ YouGov_19_24_samplesize = YouGov_19_24_all_adults['2024-07-03'].iloc[-1]
 
 
 
-collected_data = pd.read_csv("train_test_dataset.csv")                                       # Preparing the data into X feature matrix and y target vectors
+collected_data = pd.read_csv("../train_test_dataset.csv")                                       # Preparing the data into X feature matrix and y target vectors
 collected_data = collected_data.fillna(0)                                                                # Filling in missing values
 encoded_region = LabelEncoder()                                                  # Turning the string data to numerical values for the model to use
 collected_data['region_encoded'] = encoded_region.fit_transform(collected_data['region'])

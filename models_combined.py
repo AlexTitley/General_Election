@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import GridSearchCV
+np.random.seed(0)
 
 
 
@@ -164,20 +165,12 @@ def year_based_time_series_cv(years, n_splits=3):
 
 
 PARAM_GRID = {
-    'n_estimators': [500],
-    'max_depth': [None],
-    'min_samples_leaf': [1],
-    'max_features': [0.5],
+    'n_estimators': [100,250,500],
+    'max_depth': [None, 10, 20, 30, 40, 50, 60],
+    'min_samples_leaf': [1, 3, 5, 7],
+    'max_features': ['sqrt', 0.25, 0.5, 0.75],
 }
 
-'''
-    {
-    'n_estimators': [200, 500],
-    'max_depth': [None, 10, 20],
-    'min_samples_leaf': [1, 3, 5],
-    'max_features': ['sqrt', 0.5, 1.0],
-}
-'''
 
 def random_forest(dataset,backtest=False):
     df = dataset
@@ -194,7 +187,8 @@ def random_forest(dataset,backtest=False):
                     'nat_swing_con', 'nat_swing_lab', 'nat_swing_ld', 'nat_swing_snp_pc',
                     'nat_swing_reform', 'nat_swing_green', 'nat_swing_other',
                     'house_price_rel', 'income_rel', 'employment_rel',
-                    'pop_0_15_rel', 'pop_16_64_rel', 'pop_65_plus_rel']
+                    'pop_0_17_rel', 'pop_18_24_rel', 'pop_25_34_rel',
+                    'pop_35_49_rel', 'pop_50_64_rel', 'pop_65_plus_rel']
     X = df[feature_cols]
     # Time-aware split: the most recent election is held out as the final test set,
     # and hyperparameters are tuned only on the elections before it.
@@ -245,7 +239,7 @@ def random_forest(dataset,backtest=False):
     model = RandomForestRegressor(**grid.best_params_, random_state=42, n_jobs=-1)
     model.fit(X, y)
     # Preparing data for the prediction year
-    future_df = pd.read_csv("prediction_dataset.csv")
+    future_df = pd.read_csv("prediction_dataset_new.csv")
     future_df['region_encoded'] = encoded_region.transform(future_df['region'])
     future_df['prev_winner_encoded'] = encoded_prev_winner.transform(future_df['prev_winner'])
     X_future = future_df[feature_cols]
@@ -327,7 +321,7 @@ YouGov_19_24_regional_clean = [np.stack((np.zeros(len(YouGov_19_24_party_names),
 YouGov_19_24_regional_sample_sizes = [YouGov_19_24_regional[x][chosen_date].iloc[-1] for x in range(np.shape(YouGov_19_24_regional)[0])]
 
 
-collected_data = pd.read_csv("train_test_dataset.csv")                                       # Preparing the data into X feature matrix and y target vectors
+collected_data = pd.read_csv("train_test_dataset_new.csv")                                       # Preparing the data into X feature matrix and y target vectors
 collected_data = collected_data.fillna(0)                                                                # Filling in missing values
 encoded_region = LabelEncoder()                                                  # Turning the string data to numerical values for the model to use
 collected_data['region_encoded'] = encoded_region.fit_transform(collected_data['region'])
@@ -342,7 +336,8 @@ TESTS = []
 TEST_SET = random_forest(collected_data,backtest=True)[-631:]
 TESTS.append(monte_carlo_raw(TEST_SET,1000))
 
-
+TEST_SET = random_forest(collected_data)                      # RF forecast for 2026 (prediction_dataset_new.csv)
+TESTS.append(monte_carlo_raw(TEST_SET,1000))
 #------------------------------------------Regional Swing---------------------------------------------
 TEST_SET = URS(GE19_clean,YouGov_19_24_regional_clean,YouGov_19_24_regional_sample_sizes,YouGov_regions,raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000))
@@ -353,19 +348,14 @@ TESTS.append(monte_carlo_raw(TEST_SET,1000))
 TEST_SET = Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean,YouGov_26_all_sample_size,  raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000))
 
-
 TEST_SET = Uniform_Swing(GE19_clean, YouGov_19_24_all_adults_clean,YouGov_19_24_sample_size,  raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000))
 ###-----------------------------------------Metrics (temporary AI-generated block)-----------------------------------------###
 
-MODEL_NAMES = ["RF 2024 backtest", "Regional swing: 2019 Results, + YouGov Jul 2024(backtest)", "Regional swing: 2024 Results, + YouGov Oct2026", "UNS: 2024 result + YouGov Oct 2026", "UNS: 2019 result + YouGov Jul 2024 (backtest)"]   # same order as TESTS
+MODEL_NAMES = ["RF 2024 backtest", "RF 2026 forecast (new data)", "UNS: 2024 result + YouGov Oct 2026", "URS: 2019 result + YouGov Jul 2024 (backtest)", "URS: 2024 result + YouGov Oct 2026", "UNS: 2019 result + YouGov Jul 2024 (backtest)"]   # same order as TESTS
 ACTUAL_2024 = {"Labour": 411, "Conservative": 121, "Liberal Democrat": 72, "Reform UK": 5,
                "Scottish National Party": 9, "Plaid Cymru": 4, "Green Party": 4}   # only used for backtest models
 LO, HI = 5, 95                                                                     # interval percentiles
-
-
-
-#TESTS = []
 
 for TEST, name in zip(TESTS, MODEL_NAMES):
     parties = sorted({p for u, _ in TEST for p in u})
@@ -452,6 +442,9 @@ ax.set_title("Simulated seats by party (mean and 5th-95th percentile, 1000 runs)
 plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 plt.show()
+
+
+
 
 # stats to make: hung parliament, coalition, overlay normal UNS onto monte carlo, individual seats; most marginal seats, safe seats (non contestable), which seats decide whether a pary crosses 326 
 hung = (seat_counts.max(axis=1) < 326).mean()
