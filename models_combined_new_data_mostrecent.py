@@ -172,13 +172,12 @@ PARAM_GRID = {
 }
 
 
-def random_forest(dataset,backtest=False):
+def random_forest(dataset):
     df = dataset
-    # (y) - the target columns
     target_cols = ['con_share', 'lab_share', 'ld_share', 'snp_pc_share', 'reform_share', 'green_share', 'other_share']
     y = df[target_cols]
     party_names_normalised = normalise_party_names(target_cols)
-    # Features to be used in the model - make sure to match it with both CSV files
+
     feature_cols = ['year', 'boundary_set', 'region_encoded', 'prev_winner_encoded',
                     'prev_con_share', 'prev_lab_share', 'prev_ld_share', 'prev_snp_pc_share',
                     'prev_reform_share', 'prev_green_share', 'prev_other_share', 'prev_margin',
@@ -190,17 +189,16 @@ def random_forest(dataset,backtest=False):
                     'pop_0_17_rel', 'pop_18_24_rel', 'pop_25_34_rel',
                     'pop_35_49_rel', 'pop_50_64_rel', 'pop_65_plus_rel']
     X = df[feature_cols]
-    # Time-aware split: the most recent election is held out as the final test set,
-    # and hyperparameters are tuned only on the elections before it.
+
+    # Time-aware split: hold out the most recent election (2024)
     holdout_year = df['year'].max()
     dev_mask = (df['year'] < holdout_year).to_numpy()
     X_dev, y_dev = X[dev_mask], y[dev_mask]
     X_test, y_test = X[~dev_mask], y[~dev_mask]
 
-    # GridSearchCV with expanding-window (TimeSeriesSplit) folds over election years
+    # GridSearchCV with expanding-window folds over election years
     cv_splits = year_based_time_series_cv(df.loc[dev_mask, 'year'], n_splits=3)
     grid = GridSearchCV(
-        # n_jobs=1 on the forest, parallelism is handled by GridSearchCV
         estimator=RandomForestRegressor(random_state=42, n_jobs=1),
         param_grid=PARAM_GRID,
         cv=cv_splits,
@@ -210,56 +208,154 @@ def random_forest(dataset,backtest=False):
         verbose=1,
     )
     grid.fit(X_dev, y_dev)
-    print(f"Best params: {grid.best_params_}")
-    print(f"Best CV MAE (time-series folds, raw %-point shares): {-grid.best_score_:.4f}")
+    print(f"[Pure RF] Best params: {grid.best_params_}")
+    print(f"[Pure RF] Best CV MAE (time-series folds, raw %-point shares): {-grid.best_score_:.4f}")
     model = grid.best_estimator_
-    # Evaluate on the held-out election
+
+    # Evaluate on the held-out election (2024 backtest)
     raw_test_preds = model.predict(X_test)
     test_preds_df = pd.DataFrame(raw_test_preds, columns=target_cols, index=X_test.index)
-    # If reform/green party stood in the constituency then the share is multiplied by 1, if not stood then share is multiplied by 0
     if 'reform_stood' in X_test.columns:
         test_preds_df['reform_share'] = test_preds_df['reform_share'] * df.loc[X_test.index, 'reform_stood']
     if 'green_stood' in X_test.columns:
         test_preds_df['green_share'] = test_preds_df['green_share'] * df.loc[X_test.index, 'green_stood']
-    # Normalising test predictions to sum to 1.0 (100%)
+
     test_preds_normalized = test_preds_df.div(test_preds_df.sum(axis=1), axis=0)
-    # Calculating Mean Absolute Error (MAE) to use in monte carlo simulation
-    mae = mean_absolute_error(y_test/100, test_preds_normalized)
-    print(f"Mean Absolute Error on {holdout_year} hold-out: {mae:.4f} (share, 0-1 scale)")
+    mae = mean_absolute_error(y_test / 100, test_preds_normalized)
+    print(f"[Pure RF] Mean Absolute Error on {holdout_year} hold-out: {mae:.4f} (share, 0-1 scale)")
 
-    if backtest:
-        backtest_shares = test_preds_normalized.to_numpy()
-        backtest_names = (df.loc[X_test.index, 'name'] + df.loc[X_test.index, 'year'].astype(str)).to_numpy()
-        backtest_output = [[backtest_names[x], [backtest_shares[x], np.full(len(target_cols), mae)], party_names_normalised] for x in range(len(backtest_shares))]
+    backtest_shares = test_preds_normalized.to_numpy()
+    backtest_names = (df.loc[X_test.index, 'name'] + df.loc[X_test.index, 'year'].astype(str)).to_numpy()
+    backtest_output = [
+        [backtest_names[x], [backtest_shares[x], np.full(len(target_cols), mae)], party_names_normalised]
+        for x in range(len(backtest_shares))
+    ]
 
-
-
-
-    # Refit the tuned model on every election (including the hold-out year) for the forecast
+    # Refit the tuned model on every election (including the hold-out year) for the 2026 forecast
     model = RandomForestRegressor(**grid.best_params_, random_state=42, n_jobs=-1)
     model.fit(X, y)
-    # Preparing data for the prediction year
+
     future_df = pd.read_csv("prediction_dataset_new.csv")
     future_df['region_encoded'] = encoded_region.transform(future_df['region'])
     future_df['prev_winner_encoded'] = encoded_prev_winner.transform(future_df['prev_winner'])
-    X_future = future_df[feature_cols]
-    X_future = X_future.fillna(0)
-    # Prediction for next general election
+    X_future = future_df[feature_cols].fillna(0)
+
     future_raw_preds = model.predict(X_future)
     future_preds_df = pd.DataFrame(future_raw_preds, columns=target_cols, index=future_df.index)
-    # Normalising future predictions to sum to 1.0 (100%)
-    party_names_out = [party_names_normalised for x in range(df.shape[0])]
     future_preds_normalized = future_preds_df.div(future_preds_df.sum(axis=1), axis=0).to_numpy()
-    #prep for return
 
-    future_preds_variance = np.zeros(np.shape(future_preds_normalized))
     constituency_names = future_df['name'] + future_df['year'].astype(str)
-    output = [[constituency_names[x], [future_preds_normalized[x], np.full(np.shape(future_preds_normalized[x]), mae)],party_names_normalised] for x in range(len(future_preds_normalized))]
+    output = [
+        [constituency_names[x], [future_preds_normalized[x], np.full(np.shape(future_preds_normalized[x]), mae)], party_names_normalised]
+        for x in range(len(future_preds_normalized))
+    ]
 
-    if backtest:
-        return(backtest_output)
-    else:
-        return(output)
+    return backtest_output, output
+
+
+def random_forest_UNS_hybrid(dataset):
+    df = dataset
+    target_cols = ['con_share', 'lab_share', 'ld_share', 'snp_pc_share', 'reform_share', 'green_share', 'other_share']
+    prev_cols   = ['prev_con_share', 'prev_lab_share', 'prev_ld_share', 'prev_snp_pc_share',
+                   'prev_reform_share', 'prev_green_share', 'prev_other_share']
+    swing_cols  = ['nat_swing_con', 'nat_swing_lab', 'nat_swing_ld', 'nat_swing_snp_pc',
+                   'nat_swing_reform', 'nat_swing_green', 'nat_swing_other']
+
+    # 1. Linear Uniform National Swing (UNS) baseline (0-100 scale)
+    y_raw = df[target_cols]
+    y_baseline = pd.DataFrame(
+        df[prev_cols].to_numpy() + df[swing_cols].to_numpy(),
+        columns=target_cols,
+        index=df.index
+    )
+
+    # 2. Target is local excess swing (actual share minus UNS baseline)
+    y_residual = y_raw - y_baseline
+    party_names_normalised = normalise_party_names(target_cols)
+
+    feature_cols = ['year', 'boundary_set', 'region_encoded', 'prev_winner_encoded',
+                    'prev_con_share', 'prev_lab_share', 'prev_ld_share', 'prev_snp_pc_share',
+                    'prev_reform_share', 'prev_green_share', 'prev_other_share', 'prev_margin',
+                    'prev_rel_con', 'prev_rel_lab', 'prev_rel_ld', 'prev_rel_snp_pc',
+                    'prev_rel_reform', 'prev_rel_green', 'prev_rel_other',
+                    'nat_swing_con', 'nat_swing_lab', 'nat_swing_ld', 'nat_swing_snp_pc',
+                    'nat_swing_reform', 'nat_swing_green', 'nat_swing_other',
+                    'house_price_rel', 'income_rel', 'employment_rel',
+                    'pop_0_17_rel', 'pop_18_24_rel', 'pop_25_34_rel',
+                    'pop_35_49_rel', 'pop_50_64_rel', 'pop_65_plus_rel']
+    X = df[feature_cols]
+
+    # Time-aware split: hold out the most recent election (2024)
+    holdout_year = df['year'].max()
+    dev_mask = (df['year'] < holdout_year).to_numpy()
+    X_dev, y_dev = X[dev_mask], y_residual[dev_mask]
+    X_test = X[~dev_mask]
+    y_raw_test = y_raw[~dev_mask]
+
+    # GridSearchCV with expanding-window folds over election years
+    cv_splits = year_based_time_series_cv(df.loc[dev_mask, 'year'], n_splits=3)
+    grid = GridSearchCV(
+        estimator=RandomForestRegressor(random_state=42, n_jobs=1),
+        param_grid=PARAM_GRID,
+        cv=cv_splits,
+        scoring='neg_mean_absolute_error',
+        n_jobs=-1,
+        refit=True,
+        verbose=1,
+    )
+    grid.fit(X_dev, y_dev)
+    print(f"[Hybrid UNS-RF] Best params: {grid.best_params_}")
+    print(f"[Hybrid UNS-RF] Best CV MAE (time-series folds, raw %-point shares): {-grid.best_score_:.4f}")
+    model = grid.best_estimator_
+
+    # 3. Reconstruct hold-out vote shares: UNS baseline + predicted local residual
+    raw_test_preds = model.predict(X_test) + y_baseline.loc[X_test.index].to_numpy()
+    test_preds_df = pd.DataFrame(raw_test_preds, columns=target_cols, index=X_test.index).clip(lower=0)
+
+    if 'reform_stood' in df.columns:
+        test_preds_df['reform_share'] = test_preds_df['reform_share'] * df.loc[X_test.index, 'reform_stood']
+    if 'green_stood' in df.columns:
+        test_preds_df['green_share'] = test_preds_df['green_share'] * df.loc[X_test.index, 'green_stood']
+
+    test_preds_normalized = test_preds_df.div(test_preds_df.sum(axis=1), axis=0)
+
+    # 4. Compare against original unshifted actual shares (y_raw_test / 100)
+    mae = mean_absolute_error(y_raw_test / 100, test_preds_normalized)
+    print(f"[Hybrid UNS-RF] Mean Absolute Error on {holdout_year} hold-out: {mae:.4f} (share, 0-1 scale)")
+
+    backtest_shares = test_preds_normalized.to_numpy()
+    backtest_names = (df.loc[X_test.index, 'name'] + df.loc[X_test.index, 'year'].astype(str)).to_numpy()
+    backtest_output = [
+        [backtest_names[x], [backtest_shares[x], np.full(len(target_cols), mae)], party_names_normalised]
+        for x in range(len(backtest_shares))
+    ]
+
+    # 5. Refit on all historical residuals and reconstruct the 2026 forecast
+    model = RandomForestRegressor(**grid.best_params_, random_state=42, n_jobs=-1)
+    model.fit(X, y_residual)
+
+    future_df = pd.read_csv("prediction_dataset_new.csv").fillna(0)
+    future_df['region_encoded'] = encoded_region.transform(future_df['region'])
+    future_df['prev_winner_encoded'] = encoded_prev_winner.transform(future_df['prev_winner'])
+    X_future = future_df[feature_cols]
+
+    future_baseline = future_df[prev_cols].to_numpy() + future_df[swing_cols].to_numpy()
+    future_raw_preds = model.predict(X_future) + future_baseline
+    future_preds_df = pd.DataFrame(future_raw_preds, columns=target_cols, index=future_df.index).clip(lower=0)
+
+    if 'reform_stood' in future_df.columns:
+        future_preds_df['reform_share'] = future_preds_df['reform_share'] * future_df['reform_stood']
+    if 'green_stood' in future_df.columns:
+        future_preds_df['green_share'] = future_preds_df['green_share'] * future_df['green_stood']
+
+    future_preds_normalized = future_preds_df.div(future_preds_df.sum(axis=1), axis=0).to_numpy()
+    constituency_names = (future_df['name'] + future_df['year'].astype(str)).to_numpy()
+    output = [
+        [constituency_names[x], [future_preds_normalized[x], np.full(len(target_cols), mae)], party_names_normalised]
+        for x in range(len(future_preds_normalized))
+    ]
+
+    return backtest_output, output
 
 def get_regions(dataset):
     constituency_to_region = {constituency: region for region, names in constituency_regions.items() for constituency in names}
@@ -331,31 +427,34 @@ collected_data['prev_winner_encoded'] = encoded_prev_winner.fit_transform(collec
 
 TESTS = []
 
+# Run each model ONCE to get both 2024 backtest and 2026 forecast
+RF_ALL_BACKTEST, RF_TEST_SET_2426 = random_forest(collected_data)
+RF_TEST_SET_1924 = RF_ALL_BACKTEST[-631:]
 
-#--------------------------------------------Random Forest--------------------------------------
-'''
-TEST_SET = random_forest(collected_data,backtest=True)[-631:]
-TESTS.append(monte_carlo_raw(TEST_SET,100000))
-'''
+HYBRID_ALL_BACKTEST, RF_UNS_HYBRID_TEST_SET_2426 = random_forest_UNS_hybrid(collected_data)
+RF_UNS_HYBRID_TEST_SET_1924 = HYBRID_ALL_BACKTEST[-631:]
+#--------------------------------------------2024 Backtest--------------------------------------
+TESTS.append(monte_carlo_raw(RF_TEST_SET_1924, 1000))
+TESTS.append(monte_carlo_raw(RF_UNS_HYBRID_TEST_SET_1924, 1000))
 
-#------------------------------------------Regional Swing---------------------------------------------
-URS_TEST_SET_1924 = URS(GE19_clean,YouGov_19_24_regional_clean,YouGov_19_24_regional_sample_sizes,YouGov_regions,raw=True)
-TESTS.append(monte_carlo_raw(URS_TEST_SET_1924,1000))
+URS_TEST_SET_1924 = URS(GE19_clean, YouGov_19_24_regional_clean, YouGov_19_24_regional_sample_sizes, YouGov_regions, raw=True)
+TESTS.append(monte_carlo_raw(URS_TEST_SET_1924, 1000))
 
-URS_TEST_SET_2426 = URS(GE24_clean,YouGov_26_regional_clean,YouGov_26_regional_sample_sizes,YouGov_regions,raw=True)
-TESTS.append(monte_carlo_raw(URS_TEST_SET_2426,1000))
-#------------------------------------------UNS-----------------------------------------
-UNS_TEST_SET_2426 = Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean,YouGov_26_all_sample_size,  raw=True)
-TESTS.append(monte_carlo_raw(UNS_TEST_SET_2426,1000))
+UNS_TEST_SET_1924 = Uniform_Swing(GE19_clean, YouGov_19_24_all_adults_clean, YouGov_19_24_sample_size, raw=True)
+TESTS.append(monte_carlo_raw(UNS_TEST_SET_1924, 1000))
+#--------------------------------------------2026 Forecast--------------------------------------
+TESTS.append(monte_carlo_raw(RF_TEST_SET_2426, 1000))
+TESTS.append(monte_carlo_raw(RF_UNS_HYBRID_TEST_SET_2426, 1000))
 
-RF_TEST_SET = random_forest(collected_data)                      # RF forecast for 2026 (prediction_dataset_new.csv)
-TESTS.append(monte_carlo_raw(RF_TEST_SET,1000))
+URS_TEST_SET_2426 = URS(GE24_clean, YouGov_26_regional_clean, YouGov_26_regional_sample_sizes, YouGov_regions, raw=True)
+TESTS.append(monte_carlo_raw(URS_TEST_SET_2426, 1000))
 
-UNS_TEST_SET_1924 = Uniform_Swing(GE19_clean, YouGov_19_24_all_adults_clean,YouGov_19_24_sample_size,  raw=True)
-TESTS.append(monte_carlo_raw(UNS_TEST_SET_1924,1000))
+UNS_TEST_SET_2426 = Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean, YouGov_26_all_sample_size, raw=True)
+TESTS.append(monte_carlo_raw(UNS_TEST_SET_2426, 1000))
 ###-----------------------------------------Metrics (temporary AI-generated block)-----------------------------------------###
 
-MODEL_NAMES = ["RF 2024 backtest", "RF 2026 forecast (new data)", "UNS: 2024 result + YouGov Oct 2026", "UNS: 2019 result + YouGov Jul 2024 (backtest)"]   # same order as TESTS
+MODEL_NAMES = ["RF 2024 backtest", "RF_UNS_HYBRID 2024 backtest", "URS: 2019 result + YouGov Jul 2024 (backtest)", "UNS: 2019 result + YouGov Jul 2024 (backtest)", 
+               "RF 2026 forecast (new data)","RF_UNS_HYBRID 2026 forecast (new data)", "URS: 2024 result + YouGov Oct 2026", "UNS: 2024 result + YouGov Oct 2026"]   # same order as TESTS
 ACTUAL_2024 = {"Labour": 411, "Conservative": 121, "Liberal Democrat": 72, "Reform UK": 5,
                "Scottish National Party": 9, "Plaid Cymru": 4, "Green Party": 4}   # only used for backtest models
 LO, HI = 5, 95                                                                     # interval percentiles
@@ -449,7 +548,7 @@ det_uns = dict(zip(det_parties_UNS, det_seats_UNS))
 det_vals_UNS = [det_uns.get(p, 0) for p in names]
 
 # seats, parties for random forest - deterministic
-RF_raw = random_forest(collected_data)
+RF_raw = RF_TEST_SET_2426
 names = np.concatenate([[c[0]] * len(c[2]) for c in RF_raw])
 shares = np.concatenate([c[1][0] for c in RF_raw])
 parties = np.concatenate([c[2] for c in RF_raw])
@@ -458,7 +557,7 @@ rf_dataset = np.stack((names, shares, parties), dtype=object)
 rf_parties, rf_seats = get_seats(rf_dataset)
 
 # seats, parties for random forest - monte carlo
-rf_mc = monte_carlo_raw(RF_TEST_SET, 1000)
+rf_mc = monte_carlo_raw(RF_TEST_SET_2426, 1000)
 rf_parties_mc = sorted({p for u, _ in rf_mc for p in u})
 dicts = [dict(zip(u, c)) for u, c in rf_mc]
 rf_seats_mc = np.array([[d.get(p, 0) for p in rf_parties_mc] for d in dicts])
@@ -652,4 +751,5 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
     plt.show()
 
 #plot_parliament(Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean), baseline=get_seats(GE24_clean))
+
 
