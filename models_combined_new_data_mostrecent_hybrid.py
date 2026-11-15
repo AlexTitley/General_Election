@@ -764,4 +764,62 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
 
 #plot_parliament(Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean), baseline=get_seats(GE24_clean))
 
+# UNS histogram attempt 
+keep = uns_seats_mc.mean(axis=0) > 3
+UNS_hist_array = uns_seats_mc[:, keep]
+UNS_hist_parties = [p for p, k in zip(uns_parties_mc, keep) if k]
+
+plt.figure()
+for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
+    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("UNS histogram")
+plt.show()
+
+# URS histogram
+keep = urs_seats_mc.mean(axis=0) > 3
+URS_hist_array = urs_seats_mc[:, keep]
+URS_hist_parties = [p for p, k in zip(urs_parties_mc, keep) if k]
+
+plt.figure()
+for party, data in zip(URS_hist_parties, URS_hist_array.T):
+    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("URS histogram")
+plt.show()
+
+# Random forest histogram
+keep = rf_seats_mc.mean(axis=0) > 3
+RF_hist_array = rf_seats_mc[:, keep]
+RF_hist_parties = [p for p, k in zip(rf_parties_mc, keep) if k]
+
+plt.figure()
+for party, data in zip(RF_hist_parties, RF_hist_array.T):
+    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("RF histogram")
+plt.show()
+
+# Hybrid histogram
+keep = hybrid_seats_mc.mean(axis=0) > 3
+hybrid_hist_array = hybrid_seats_mc[:, keep]
+hybrid_hist_parties = [p for p, k in zip(hybrid_parties_mc, keep) if k]
+
+plt.figure()
+for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
+    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("Hybrid histogram")
+plt.show()
+
+
+
 
