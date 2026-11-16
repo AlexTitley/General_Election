@@ -468,7 +468,6 @@ YouGov_15_17_regional_clean = [np.stack((np.zeros(7), np.rint(np.array(s) / 100 
 
 
 
-
 YouGov_05_10_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'SNP', 'BNP', 'Green', 'Other'])
 YouGov_05_10_wales_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'Plaid', 'BNP', 'Green', 'Other'])
 
@@ -483,9 +482,12 @@ YouGov_05_10_regional_sample_sizes = [908, 2177, 1230, 1534, 634, 1230]
 YouGov_05_10_regional_clean = [np.stack((np.zeros(8), np.rint(np.array(s) / 100 * n), YouGov_05_10_wales_party_names if r == 'Wales' else YouGov_05_10_party_names), dtype=object)
                                for r, s, n in zip(YouGov_05_10_regions, YouGov_05_10_regional_shares, YouGov_05_10_regional_weighted_n)]
 
+GE05_scot = pd.read_csv('GE05_scotland_actual.csv')
+GE05_scot_clean = np.stack((GE05_scot['Constituency name'], GE05_scot['Candidate vote count'], normalise_party_names(GE05_scot['Main party name'])))
+GE05_clean = np.concatenate((GE05_clean, GE05_scot_clean), axis=1)
 
 
-
+print(len(set(GE05_clean[0])), {k: v.shape[1] for k, v in get_regions(GE05_clean).items()})   # temporary check
 
 
 
@@ -512,6 +514,28 @@ RF_TEST_SET_1924 = RF_ALL_BACKTEST[-631:]
 
 HYBRID_ALL_BACKTEST, RF_UNS_HYBRID_TEST_SET_2426 = random_forest_UNS_hybrid(collected_data)
 RF_UNS_HYBRID_TEST_SET_1924 = HYBRID_ALL_BACKTEST[-631:]
+
+_r = get_regions(GE05_clean)
+print({k: v.shape[1] for k, v in _r.items()})
+print(len(set(GE05_clean[0])), sorted(set(GE05_clean[0]))[:15])
+
+#--------------------------------------------2010 Backtest--------------------------------------
+URS_TEST_SET_0510 = URS(GE05_clean, YouGov_05_10_regional_clean, YouGov_05_10_regional_sample_sizes, YouGov_regions, raw=True)
+TESTS.append(monte_carlo_raw(URS_TEST_SET_0510, 1000))
+UNS_TEST_SET_0510 = Uniform_Swing(GE05_clean, YouGov_05_10_all_adults_clean, YouGov_05_10_sample_size, raw=True)
+TESTS.append(monte_carlo_raw(UNS_TEST_SET_0510, 1000))
+#--------------------------------------------2015 Backtest--------------------------------------
+URS_TEST_SET_1015 = URS(GE10_clean, YouGov_10_15_regional_clean, YouGov_10_15_regional_sample_sizes, YouGov_regions, raw=True)
+TESTS.append(monte_carlo_raw(URS_TEST_SET_1015, 1000))
+UNS_TEST_SET_1015 = Uniform_Swing(GE10_clean, YouGov_10_15_all_adults_clean, YouGov_10_15_sample_size, raw=True)
+TESTS.append(monte_carlo_raw(UNS_TEST_SET_1015, 1000))
+#--------------------------------------------2017 Backtest--------------------------------------
+URS_TEST_SET_1517 = URS(GE15_clean, YouGov_15_17_regional_clean, YouGov_15_17_regional_sample_sizes, YouGov_regions, raw=True)
+TESTS.append(monte_carlo_raw(URS_TEST_SET_1517, 1000))
+UNS_TEST_SET_1517 = Uniform_Swing(GE15_clean, YouGov_15_17_all_adults_clean, YouGov_15_17_sample_size, raw=True)
+TESTS.append(monte_carlo_raw(UNS_TEST_SET_1517, 1000))
+
+
 #--------------------------------------------2024 Backtest--------------------------------------
 TESTS.append(monte_carlo_raw(RF_TEST_SET_1924, 1000))
 TESTS.append(monte_carlo_raw(RF_UNS_HYBRID_TEST_SET_1924, 1000))
@@ -531,11 +555,20 @@ TESTS.append(monte_carlo_raw(URS_TEST_SET_2426, 1000))
 UNS_TEST_SET_2426 = Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean, YouGov_26_all_sample_size, raw=True)
 TESTS.append(monte_carlo_raw(UNS_TEST_SET_2426, 1000))
 ###-----------------------------------------Metrics (temporary AI-generated block)-----------------------------------------###
-
-MODEL_NAMES = ["RF 2024 backtest", "RF_UNS_HYBRID 2024 backtest", "URS: 2019 result + YouGov Jul 2024 (backtest)", "UNS: 2019 result + YouGov Jul 2024 (backtest)", 
-               "RF 2026 forecast (new data)","RF_UNS_HYBRID 2026 forecast (new data)", "URS: 2024 result + YouGov Oct 2026", "UNS: 2024 result + YouGov Oct 2026"]   # same order as TESTS
+ACTUAL_2010 = dict(zip(*get_seats(GE10_clean)))
+ACTUAL_2015 = dict(zip(*get_seats(GE15_clean)))
+ACTUAL_2017 = dict(zip(*get_seats(GE17_clean)))
 ACTUAL_2024 = {"Labour": 411, "Conservative": 121, "Liberal Democrat": 72, "Reform UK": 5,
-               "Scottish National Party": 9, "Plaid Cymru": 4, "Green Party": 4}   # only used for backtest models
+               "Scottish National Party": 9, "Plaid Cymru": 4, "Green Party": 4}
+MODEL_NAMES = ["URS: 2005 result + YouGov May 2010 (backtest)", "UNS: 2005 result + YouGov May 2010 (backtest)",
+             "URS: 2010 result + YouGov May 2015 (backtest)", "UNS: 2010 result + YouGov May 2015 (backtest)",
+             "URS: 2015 result + YouGov Jun 2017 (backtest)", "UNS: 2015 result + YouGov Jun 2017 (backtest)", "RF 2024 backtest", "RF_UNS_HYBRID 2024 backtest", "URS: 2019 result + YouGov Jul 2024 (backtest)", "UNS: 2019 result + YouGov Jul 2024 (backtest)",
+               "RF 2026 forecast (new data)","RF_UNS_HYBRID 2026 forecast (new data)", "URS: 2024 result + YouGov Oct 2026", "UNS: 2024 result + YouGov Oct 2026"]   # same order as TESTS
+
+actual_by_model = dict(zip(MODEL_NAMES[:6], [ACTUAL_2010]*2 + [ACTUAL_2015]*2 + [ACTUAL_2017]*2))
+backtest_summary = {}
+
+   # only used for backtest models
 LO, HI = 5, 95                                                                     # interval percentiles
 
 for TEST, name in zip(TESTS, MODEL_NAMES):
@@ -544,29 +577,38 @@ for TEST, name in zip(TESTS, MODEL_NAMES):
     seats = np.array([[d.get(p, 0) for p in parties] for d in dicts])        # simulations x parties
     total = int(seats[0].sum()); majority = total // 2 + 1
     is_backtest = "backtest" in name
+    actual = actual_by_model.get(name, ACTUAL_2024)
     print(f"\n{'=' * 78}\n{name}  ({len(seats)} sims, {total} seats, majority {majority})\n{'=' * 78}")
 
     # 1. seat distribution per party (percentiles instead of min/max); actual result + its percentile for backtests
     print(f"{'Party':27s}{'mean':>6}{'median':>8}{f'{LO}%':>6}{f'{HI}%':>6}{'sd':>6}" + (f"{'actual':>8}{'pctile':>8}" if is_backtest else ""))
     for i in np.argsort(-np.median(seats, axis=0)):
         p = parties[i]
-        if seats[:, i].mean() < 0.5 and not (is_backtest and p in ACTUAL_2024):
+        if seats[:, i].mean() < 0.5 and not (is_backtest and p in actual):
             continue
         lo, med, hi = np.percentile(seats[:, i], [LO, 50, HI])
         row = f"{p:27s}{seats[:, i].mean():6.0f}{med:8.0f}{lo:6.0f}{hi:6.0f}{seats[:, i].std():6.1f}"
-        if is_backtest and p in ACTUAL_2024:
-            a = ACTUAL_2024[p]
+        if is_backtest and p in actual:
+            a = actual[p]
             row += f"{a:8d}{((seats[:, i] < a).mean() + 0.5 * (seats[:, i] == a).mean()) * 100:7.0f}%"
         print(row)
 
     # 2. largest party, single-party majority, hung parliament
     largest = seats.argmax(axis=1)
+    if is_backtest:
+        act = np.array([actual.get(p, 0) for p in parties])
+        errs = np.abs(seats - act).sum(axis=1) / 2
+        actual_largest = max(actual, key=actual.get)
+        p_largest = np.mean([parties[i] == actual_largest for i in largest])
+        backtest_summary[name] = (errs.mean(), p_largest, actual_largest)
     print("\nLargest party: " + ", ".join(f"{parties[i]} {(largest == i).mean():.1%}" for i in range(len(parties)) if (largest == i).any()))
     has_majority = seats >= majority
     print("Single-party majority: " + (", ".join(f"{parties[i]} {has_majority[:, i].mean():.1%}" for i in range(len(parties)) if has_majority[:, i].any()) or "none"))
     print(f"Hung parliament: {(~has_majority.any(axis=1)).mean():.1%}")
 
-
+print("Backtest / mean |seat error| / P(correct largest)")
+for k, (err, p, al) in backtest_summary.items():
+    print(f"{k}: {err:.1f}, {p:.0%} ({al})")
 
 
 ORDER = ["Labour", "Conservative", "Liberal Democrat", "Reform UK",
