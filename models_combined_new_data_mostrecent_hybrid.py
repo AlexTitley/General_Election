@@ -387,7 +387,6 @@ GE24 = pd.read_csv('candidate-level-results-general-election-04-07-2024.csv')
 GE24_clean = np.stack((GE24['Constituency name'], GE24['Candidate vote count'] ,normalise_party_names(GE24['Main party name'])))
 GE24_clean = GE24_clean[:, ~np.isin(GE24_clean[0], ni_constituencies)]
 
-
 GE19 = pd.read_csv('HoC-GE2019-results-by-candidate.csv')
 GE19_clean = np.stack((GE19['Constituency name'], GE19['Votes'] ,normalise_party_names(GE19['Party name'])))
 GE19_clean = GE19_clean[:, ~np.isin(GE19_clean[0], ni_constituencies)]
@@ -403,8 +402,6 @@ YouGov_26_all_sample_size = YouGov_26_all_adults[chosen_date].iloc[-1]
 YouGov_26_regional = [pd.read_excel('voting-intention (1).xlsx', sheet_name=region) for region in YouGov_regions]
 YouGov_26_regional_clean = [np.stack((np.zeros(len(YouGov_26_party_names),),np.rint(YouGov_26_regional[x][chosen_date].iloc[:-2]*YouGov_26_regional[x][chosen_date].iloc[-2]),YouGov_26_party_names),dtype=object) for x in range(np.shape(YouGov_26_regional)[0])]
 YouGov_26_regional_sample_sizes = [YouGov_26_regional[x][chosen_date].iloc[-1] for x in range(np.shape(YouGov_26_regional)[0])]
-
-
 
 chosen_date = '2024-07-03'
 YouGov_19_24_all_adults = pd.read_excel('voting-intention-2019-2024 (1).xlsx', sheet_name='All adults')
@@ -516,115 +513,235 @@ def model_dict(test_set):
     mc_hi_dict = dict(zip(model_parties_mc, np.percentile(model_seats_mc, 95, axis=0)))
     return mc_mean_dict, mc_lo_dict, mc_hi_dict, model_mc_runs, model_parties_mc, model_seats_mc
 
-mc_mean_dict_uns, mc_lo_dict_uns, mc_hi_dict_uns, uns_mc_runs, uns_parties_mc, uns_seats_mc = model_dict(UNS_TEST_SET_2426)
-mc_mean_dict_urs, mc_lo_dict_urs, mc_hi_dict_urs, urs_mc_runs, urs_parties_mc, urs_seats_mc = model_dict(URS_TEST_SET_2426)
-mc_mean_dict_rf,  mc_lo_dict_rf,  mc_hi_dict_rf, rf_runs_mc, rf_parties_mc, rf_seats_mc = model_dict(RF_TEST_SET_2426)
-mc_mean_dict_hybrid, mc_lo_dict_hybrid, mc_hi_dict_hybrid, hybrid_runs_mc, hybrid_parties_mc, hybrid_seats_mc = model_dict(RF_UNS_HYBRID_TEST_SET_2426)
+# for 2026 data 
+
+mc_mean_dict_uns26, mc_lo_dict_uns26, mc_hi_dict_uns26, uns_mc_runs26, uns_parties_mc26, uns_seats_mc26 = model_dict(UNS_TEST_SET_2426)
+mc_mean_dict_urs26, mc_lo_dict_urs26, mc_hi_dict_urs26, urs_mc_runs26, urs_parties_mc26, urs_seats_mc26 = model_dict(URS_TEST_SET_2426)
+mc_mean_dict_rf26,  mc_lo_dict_rf26,  mc_hi_dict_rf26, rf_runs_mc26, rf_parties_mc26, rf_seats_mc26 = model_dict(RF_TEST_SET_2426)
+mc_mean_dict_hybrid26, mc_lo_dict_hybrid26, mc_hi_dict_hybrid26, hybrid_runs_mc26, hybrid_parties_mc26, hybrid_seats_mc26 = model_dict(RF_UNS_HYBRID_TEST_SET_2426)
 
 # Get deterministic URS values 
-det_parties_URS, det_seats_URS = URS(GE24_clean, YouGov_26_regional_clean, YouGov_26_regional_sample_sizes, YouGov_regions, raw=False)
-det_urs = dict(zip(det_parties_URS, det_seats_URS))
-det_vals_URS = [det_urs.get(p, 0) for p in names]
+det_parties_URS26, det_seats_URS26 = URS(GE24_clean, YouGov_26_regional_clean, YouGov_26_regional_sample_sizes, YouGov_regions, raw=False)
+det_urs26 = dict(zip(det_parties_URS26, det_seats_URS26))
+det_vals_URS26 = [det_urs26.get(p, 0) for p in names]
 
 # Get deterministic UNS values 
-det_parties_UNS, det_seats_UNS = Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean, YouGov_26_all_sample_size, raw=False)
-det_uns = dict(zip(det_parties_UNS, det_seats_UNS))
-det_vals_UNS = [det_uns.get(p, 0) for p in names]
+det_parties_UNS26, det_seats_UNS26 = Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean, YouGov_26_all_sample_size, raw=False)
+det_uns26 = dict(zip(det_parties_UNS26, det_seats_UNS26))
+det_vals_UNS26 = [det_uns26.get(p, 0) for p in names]
 
 # seats, parties for random forest - deterministic
-RF_raw = RF_TEST_SET_2426
-rf_names = np.concatenate([[c[0]] * len(c[2]) for c in RF_raw])
-rf_shares = np.concatenate([c[1][0] for c in RF_raw])
-rf_parties = np.concatenate([c[2] for c in RF_raw])
+RF_raw26 = RF_TEST_SET_2426
+rf_names26 = np.concatenate([[c[0]] * len(c[2]) for c in RF_raw26])
+rf_shares26 = np.concatenate([c[1][0] for c in RF_raw26])
+rf_parties26 = np.concatenate([c[2] for c in RF_raw26])
 
-rf_dataset = np.stack((rf_names, rf_shares, rf_parties), dtype=object)
-rf_parties, rf_seats = get_seats(rf_dataset)
+rf_dataset26 = np.stack((rf_names26, rf_shares26, rf_parties26), dtype=object)
+rf_parties26, rf_seats26 = get_seats(rf_dataset26)
 
 # seats, parties for random forest uns hybrid - deterministic
-hybrid_raw = RF_UNS_HYBRID_TEST_SET_2426
-hybrid_names = np.concatenate([[c[0]] * len(c[2]) for c in hybrid_raw])
-hybrid_shares = np.concatenate([c[1][0] for c in hybrid_raw])
-hybrid_parties = np.concatenate([c[2] for c in hybrid_raw])
+hybrid_raw26 = RF_UNS_HYBRID_TEST_SET_2426
+hybrid_names26 = np.concatenate([[c[0]] * len(c[2]) for c in hybrid_raw26])
+hybrid_shares26 = np.concatenate([c[1][0] for c in hybrid_raw26])
+hybrid_parties26 = np.concatenate([c[2] for c in hybrid_raw26])
 
-hybrid_dataset = np.stack((hybrid_names, hybrid_shares, hybrid_parties), dtype=object)
-hybrid_parties, hybrid_seats = get_seats(hybrid_dataset)
+hybrid_dataset26 = np.stack((hybrid_names26, hybrid_shares26, hybrid_parties26), dtype=object)
+hybrid_parties26, hybrid_seats26 = get_seats(hybrid_dataset26)
 
-# seats, parties for random forest uns hybrid - monte carlo
-# hybrid_mc = monte_carlo_raw(RF_UNS_HYBRID_TEST_SET_2426, 1000)
-# rf_parties_mc = sorted({p for u, _ in rf_mc for p in u})
-# dicts = [dict(zip(u, c)) for u, c in rf_mc]
-# rf_seats_mc = np.array([[d.get(p, 0) for p in rf_parties_mc] for d in dicts])
-# mc_mean_dict_rf = dict(zip(rf_parties_mc, rf_seats_mc.mean(axis=0)))
-# mc_lo_dict_rf = dict(zip(rf_parties_mc, np.percentile(rf_seats_mc, 5, axis=0)))
-# mc_hi_dict_rf = dict(zip(rf_parties_mc, np.percentile(rf_seats_mc, 95, axis=0)))
+act_parties26, act_counts26 = get_seats(GE24_clean)
+actual26 = dict(zip(act_parties26, act_counts26))
+actual_vals26 = [actual26.get(p, 0) for p in names]  
 
 # building chart 
 
 all_parties = sorted(list(set(
-    list(mc_mean_dict_uns.keys()) + 
-    list(mc_mean_dict_urs.keys()) +
-    list(mc_mean_dict_rf.keys()) + 
-    list(det_urs.keys()) + 
-    list(det_uns.keys()) + 
-    list(dict(zip(rf_parties, rf_seats)).keys()
+    list(mc_mean_dict_uns26.keys()) + 
+    list(mc_mean_dict_urs26.keys()) +
+    list(mc_mean_dict_rf26.keys()) + 
+    list(det_urs26.keys()) + 
+    list(det_uns26.keys()) + 
+    list(dict(zip(rf_parties26, rf_seats26)).keys()
 ))))
 
-all_parties.sort(key=lambda p: mc_mean_dict_rf.get(p, mc_mean_dict_uns.get(p, 0)), reverse=True)
+all_parties.sort(key=lambda p: mc_mean_dict_rf26.get(p, mc_mean_dict_uns26.get(p, 0)), reverse=True)
 
 x = np.arange(len(all_parties))
 w = 0.12
 
 # UNS monte carlo
-uns_mean = [mc_mean_dict_uns.get(p, 0) for p in all_parties]
-uns_lo   = [mc_mean_dict_uns.get(p, 0) - mc_lo_dict_uns.get(p, 0) for p in all_parties]
-uns_hi   = [mc_hi_dict_uns.get(p, 0) - mc_mean_dict_uns.get(p, 0) for p in all_parties]
+uns_mean26 = [mc_mean_dict_uns26.get(p, 0) for p in all_parties]
+uns_lo26   = [mc_mean_dict_uns26.get(p, 0) - mc_lo_dict_uns26.get(p, 0) for p in all_parties]
+uns_hi26   = [mc_hi_dict_uns26.get(p, 0) - mc_mean_dict_uns26.get(p, 0) for p in all_parties]
 
 # URS monte carlo
-urs_mean = [mc_mean_dict_urs.get(p, 0) for p in all_parties]
-urs_lo   = [mc_mean_dict_urs.get(p, 0) - mc_lo_dict_urs.get(p, 0) for p in all_parties]
-urs_hi   = [mc_hi_dict_urs.get(p, 0) - mc_mean_dict_urs.get(p, 0) for p in all_parties]
+urs_mean26 = [mc_mean_dict_urs26.get(p, 0) for p in all_parties]
+urs_lo26   = [mc_mean_dict_urs26.get(p, 0) - mc_lo_dict_urs26.get(p, 0) for p in all_parties]
+urs_hi26   = [mc_hi_dict_urs26.get(p, 0) - mc_mean_dict_urs26.get(p, 0) for p in all_parties]
 
 # RF monte carlo 
-rf_mean = [mc_mean_dict_rf.get(p, 0) for p in all_parties]
-rf_lo   = [mc_mean_dict_rf.get(p, 0) - mc_lo_dict_rf.get(p, 0) for p in all_parties]
-rf_hi   = [mc_hi_dict_rf.get(p, 0) - mc_mean_dict_rf.get(p, 0) for p in all_parties]
+rf_mean26 = [mc_mean_dict_rf26.get(p, 0) for p in all_parties]
+rf_lo26   = [mc_mean_dict_rf26.get(p, 0) - mc_lo_dict_rf26.get(p, 0) for p in all_parties]
+rf_hi26   = [mc_hi_dict_rf26.get(p, 0) - mc_mean_dict_rf26.get(p, 0) for p in all_parties]
 
 # Hybrid monte carlo
-hybrid_mean = [mc_mean_dict_hybrid.get(p, 0) for p in all_parties]
-hybrid_lo   = [mc_mean_dict_hybrid.get(p, 0) - mc_lo_dict_hybrid.get(p, 0) for p in all_parties]
-hybrid_hi   = [mc_hi_dict_hybrid.get(p, 0) - mc_mean_dict_hybrid.get(p, 0) for p in all_parties]
+hybrid_mean26 = [mc_mean_dict_hybrid26.get(p, 0) for p in all_parties]
+hybrid_lo26   = [mc_mean_dict_hybrid26.get(p, 0) - mc_lo_dict_hybrid26.get(p, 0) for p in all_parties]
+hybrid_hi26   = [mc_hi_dict_hybrid26.get(p, 0) - mc_mean_dict_hybrid26.get(p, 0) for p in all_parties]
 
-rf_lo = np.clip(rf_lo, 0, None)
-rf_hi = np.clip(rf_hi, 0, None)
+rf_lo26 = np.clip(rf_lo26, 0, None)
+rf_hi26 = np.clip(rf_hi26, 0, None)
 
-uns_lo = np.clip(uns_lo, 0, None )
-uns_hi = np.clip(uns_hi, 0, None )
+uns_lo26 = np.clip(uns_lo26, 0, None )
+uns_hi26 = np.clip(uns_hi26, 0, None )
 
-urs_lo = np.clip(urs_lo, 0, None )
-urs_hi = np.clip(urs_hi, 0, None )
+urs_lo26 = np.clip(urs_lo26, 0, None )
+urs_hi26 = np.clip(urs_hi26, 0, None )
 
-hybrid_lo = np.clip(hybrid_lo, 0, None)
-hybrid_hi = np.clip(hybrid_hi, 0, None)
+hybrid_lo26 = np.clip(hybrid_lo26, 0, None)
+hybrid_hi26 = np.clip(hybrid_hi26, 0, None)
 
 # deterministic values
-val_uns = [det_uns.get(p, 0) for p in all_parties]
-val_urs = [det_urs.get(p, 0) for p in all_parties]
-rf_det_dict = dict(zip(rf_parties, rf_seats))
-val_rf_det = [rf_det_dict.get(p, 0) for p in all_parties]
-hybrid_det_dict = dict(zip(hybrid_parties, hybrid_seats))
-val_hybrid_det = [hybrid_det_dict.get(p, 0) for p in all_parties]
+val_uns26 = [det_uns26.get(p, 0) for p in all_parties]
+val_urs26 = [det_urs26.get(p, 0) for p in all_parties]
+rf_det_dict26 = dict(zip(rf_parties26, rf_seats26))
+val_rf_det26 = [rf_det_dict26.get(p, 0) for p in all_parties]
+hybrid_det_dict26 = dict(zip(hybrid_parties26, hybrid_seats26))
+val_hybrid_det26 = [hybrid_det_dict26.get(p, 0) for p in all_parties]
 
 fig, ax = plt.subplots(figsize=(16, 6))
 
-ax.bar(x - 3.5*w, hybrid_mean, w, yerr=[hybrid_lo, hybrid_hi], capsize=2, color="#5E1468", label="Hybird (Monte Carlo Mean)")
-ax.bar(x - 2.5*w, uns_mean,   w, yerr=[uns_lo, uns_hi], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
-ax.bar(x - 1.5*w, urs_mean,   w, yerr=[urs_lo, urs_hi], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
-ax.bar(x - 0.5*w, rf_mean,    w, yerr=[rf_lo, rf_hi],   capsize=2, color="#2b5c8f", label="RF (Monte Carlo Mean)")
-ax.bar(x + 0.5*w, val_hybrid_det, w, color="#d9b0fb", label="Hybrid (Det)")
-ax.bar(x + 1.5*w, val_uns,    w, color="#C8374A", label="Plain UNS (Det)")
-ax.bar(x + 2.5*w, val_urs,    w, color="#f1c40f", label="Plain URS (Det)")
-ax.bar(x + 3.5*w, val_rf_det, w, color="#5BAA6A", label="Random Forest (Det)")
+ax.bar(x - 3.5*w, hybrid_mean26, w, yerr=[hybrid_lo26, hybrid_hi26], capsize=2, color="#5E1468", label="Hybird (Monte Carlo Mean)")
+ax.bar(x - 2.5*w, uns_mean26,   w, yerr=[uns_lo26, uns_hi26], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 1.5*w, urs_mean26,   w, yerr=[urs_lo26, urs_hi26], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, rf_mean26,    w, yerr=[rf_lo26, rf_hi26],   capsize=2, color="#2b5c8f", label="RF (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_hybrid_det26, w, color="#d9b0fb", label="Hybrid (Det)")
+ax.bar(x + 1.5*w, val_uns26,    w, color="#C8374A", label="Plain UNS (Det)")
+ax.bar(x + 2.5*w, val_urs26,    w, color="#f1c40f", label="Plain URS (Det)")
+ax.bar(x + 3.5*w, val_rf_det26, w, color="#5BAA6A", label="Random Forest (Det)")
+ax.scatter(names, actual_vals26, color="black", marker="*", s=150, zorder=4,
+           label="Actual 2024 result")
+ax.legend()
+ax.axhline(326, color="black", linestyle="--", linewidth=1)
+ax.text(len(all_parties) - 0.5, 330, "326 for a majority", ha="right", fontsize=8, fontweight="bold")
 
+ax.set_xticks(x)
+ax.set_xticklabels(all_parties, rotation=45, ha="right")
+ax.set_xlabel("Party", fontweight="bold")
+ax.set_ylabel("Predicted Seats", fontweight="bold")
+ax.set_title("Comprehensive Comparison: Monte Carlo vs. Deterministic Models 2026", fontsize=13, fontweight="bold")
+
+ax.legend(frameon=True, ncol=2)
+plt.tight_layout()
+plt.show()
+
+# for 2024 data
+
+mc_mean_dict_uns24, mc_lo_dict_uns24, mc_hi_dict_uns24, uns_mc_runs24, uns_parties_mc24, uns_seats_mc24 = model_dict(UNS_TEST_SET_1924)
+mc_mean_dict_urs24, mc_lo_dict_urs24, mc_hi_dict_urs24, urs_mc_runs24, urs_parties_mc24, urs_seats_mc24 = model_dict(URS_TEST_SET_1924)
+mc_mean_dict_rf24,  mc_lo_dict_rf24,  mc_hi_dict_rf24, rf_runs_mc24, rf_parties_mc24, rf_seats_mc24 = model_dict(RF_TEST_SET_1924)
+mc_mean_dict_hybrid24, mc_lo_dict_hybrid24, mc_hi_dict_hybrid24, hybrid_runs_mc24, hybrid_parties_mc24, hybrid_seats_mc24 = model_dict(RF_UNS_HYBRID_TEST_SET_1924)
+
+# Get deterministic URS values 
+det_parties_URS24, det_seats_URS24 = URS(GE19_clean, YouGov_19_24_regional_clean, YouGov_19_24_regional_sample_sizes, YouGov_regions, raw=False)
+det_urs24 = dict(zip(det_parties_URS24, det_seats_URS24))
+det_vals_URS24 = [det_urs24.get(p, 0) for p in names]
+
+# Get deterministic UNS values 
+det_parties_UNS24, det_seats_UNS24 = Uniform_Swing(GE19_clean, YouGov_19_24_all_adults_clean, YouGov_19_24_sample_size, raw=False)
+det_uns24 = dict(zip(det_parties_UNS24, det_seats_UNS24))
+det_vals_UNS24 = [det_uns24.get(p, 0) for p in names]
+
+# seats, parties for random forest - deterministic
+RF_raw24 = RF_TEST_SET_1924
+rf_names24 = np.concatenate([[c[0]] * len(c[2]) for c in RF_raw24])
+rf_shares24 = np.concatenate([c[1][0] for c in RF_raw24])
+rf_parties24 = np.concatenate([c[2] for c in RF_raw24])
+
+rf_dataset24 = np.stack((rf_names24, rf_shares24, rf_parties24), dtype=object)
+rf_parties24, rf_seats24 = get_seats(rf_dataset24)
+
+# seats, parties for random forest uns hybrid - deterministic
+hybrid_raw24 = RF_UNS_HYBRID_TEST_SET_1924
+hybrid_names24 = np.concatenate([[c[0]] * len(c[2]) for c in hybrid_raw24])
+hybrid_shares24 = np.concatenate([c[1][0] for c in hybrid_raw24])
+hybrid_parties24 = np.concatenate([c[2] for c in hybrid_raw24])
+
+hybrid_dataset24 = np.stack((hybrid_names24, hybrid_shares24, hybrid_parties24), dtype=object)
+hybrid_parties24, hybrid_seats24 = get_seats(hybrid_dataset24)
+
+act_parties24, act_counts24 = get_seats(GE19_clean)
+actual24 = dict(zip(act_parties24, act_counts24))
+actual_vals24 = [actual24.get(p, 0) for p in names]  
+
+# building chart 
+
+all_parties = sorted(list(set(
+    list(mc_mean_dict_uns24.keys()) + 
+    list(mc_mean_dict_urs24.keys()) +
+    list(mc_mean_dict_rf24.keys()) + 
+    list(det_urs24.keys()) + 
+    list(det_uns24.keys()) + 
+    list(dict(zip(rf_parties24, rf_seats24)).keys()
+))))
+
+all_parties.sort(key=lambda p: mc_mean_dict_rf24.get(p, mc_mean_dict_uns24.get(p, 0)), reverse=True)
+
+x = np.arange(len(all_parties))
+w = 0.12
+
+# UNS monte carlo
+uns_mean24 = [mc_mean_dict_uns24.get(p, 0) for p in all_parties]
+uns_lo24   = [mc_mean_dict_uns24.get(p, 0) - mc_lo_dict_uns24.get(p, 0) for p in all_parties]
+uns_hi24   = [mc_hi_dict_uns24.get(p, 0) - mc_mean_dict_uns24.get(p, 0) for p in all_parties]
+
+# URS monte carlo
+urs_mean24 = [mc_mean_dict_urs24.get(p, 0) for p in all_parties]
+urs_lo24   = [mc_mean_dict_urs24.get(p, 0) - mc_lo_dict_urs24.get(p, 0) for p in all_parties]
+urs_hi24  = [mc_hi_dict_urs24.get(p, 0) - mc_mean_dict_urs24.get(p, 0) for p in all_parties]
+
+# RF monte carlo 
+rf_mean24 = [mc_mean_dict_rf24.get(p, 0) for p in all_parties]
+rf_lo24   = [mc_mean_dict_rf24.get(p, 0) - mc_lo_dict_rf24.get(p, 0) for p in all_parties]
+rf_hi24   = [mc_hi_dict_rf24.get(p, 0) - mc_mean_dict_rf24.get(p, 0) for p in all_parties]
+
+# Hybrid monte carlo
+hybrid_mean24 = [mc_mean_dict_hybrid24.get(p, 0) for p in all_parties]
+hybrid_lo24   = [mc_mean_dict_hybrid24.get(p, 0) - mc_lo_dict_hybrid24.get(p, 0) for p in all_parties]
+hybrid_hi24   = [mc_hi_dict_hybrid24.get(p, 0) - mc_mean_dict_hybrid24.get(p, 0) for p in all_parties]
+
+rf_lo24 = np.clip(rf_lo24, 0, None)
+rf_hi24 = np.clip(rf_hi24, 0, None)
+
+uns_lo24 = np.clip(uns_lo24, 0, None )
+uns_hi24 = np.clip(uns_hi24, 0, None )
+
+urs_lo24 = np.clip(urs_lo24, 0, None )
+urs_hi24 = np.clip(urs_hi24, 0, None )
+
+hybrid_lo24 = np.clip(hybrid_lo24, 0, None)
+hybrid_hi24 = np.clip(hybrid_hi24, 0, None)
+
+# deterministic values
+val_uns24 = [det_uns24.get(p, 0) for p in all_parties]
+val_urs24 = [det_urs24.get(p, 0) for p in all_parties]
+rf_det_dict24 = dict(zip(rf_parties24, rf_seats24))
+val_rf_det24 = [rf_det_dict24.get(p, 0) for p in all_parties]
+hybrid_det_dict24 = dict(zip(hybrid_parties24, hybrid_seats24))
+val_hybrid_det24 = [hybrid_det_dict24.get(p, 0) for p in all_parties]
+
+fig, ax = plt.subplots(figsize=(16, 6))
+
+ax.bar(x - 3.5*w, hybrid_mean24, w, yerr=[hybrid_lo24, hybrid_hi24], capsize=2, color="#5E1468", label="Hybird (Monte Carlo Mean)")
+ax.bar(x - 2.5*w, uns_mean24,   w, yerr=[uns_lo24, uns_hi24], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 1.5*w, urs_mean24,   w, yerr=[urs_lo24, urs_hi24], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, rf_mean24,    w, yerr=[rf_lo24, rf_hi24],   capsize=2, color="#2b5c8f", label="RF (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_hybrid_det24, w, color="#d9b0fb", label="Hybrid (Det)")
+ax.bar(x + 1.5*w, val_uns24,    w, color="#C8374A", label="Plain UNS (Det)")
+ax.bar(x + 2.5*w, val_urs24,    w, color="#f1c40f", label="Plain URS (Det)")
+ax.bar(x + 3.5*w, val_rf_det24, w, color="#5BAA6A", label="Random Forest (Det)")
+ax.scatter(names, actual_vals24, color="black", marker="*", s=150, zorder=4,
+           label="Actual 2019 result")
+ax.legend()
 
 ax.axhline(326, color="black", linestyle="--", linewidth=1)
 ax.text(len(all_parties) - 0.5, 330, "326 for a majority", ha="right", fontsize=8, fontweight="bold")
@@ -633,7 +750,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(all_parties, rotation=45, ha="right")
 ax.set_xlabel("Party", fontweight="bold")
 ax.set_ylabel("Predicted Seats", fontweight="bold")
-ax.set_title("Comprehensive Comparison: Monte Carlo vs. Deterministic Models", fontsize=13, fontweight="bold")
+ax.set_title("Comprehensive Comparison: Monte Carlo vs. Deterministic Models 2024", fontsize=13, fontweight="bold")
 
 ax.legend(frameon=True, ncol=2)
 plt.tight_layout()
@@ -693,10 +810,10 @@ def marginal_seats(test_set):
 
 # variables needed for each model in dict; test_set, seats
 # e.g. random forest, RF_test_set, rf_mean_mc_seats 
-TESTS_forstats = [UNS_TEST_SET_2426, URS_TEST_SET_2426, RF_TEST_SET_2426, RF_UNS_HYBRID_TEST_SET_2426]
-SEATS_forstats = [uns_seats_mc, urs_seats_mc, rf_seats_mc, hybrid_seats_mc ]
-PARTIES_forstats = [uns_parties_mc, urs_parties_mc, rf_parties_mc, hybrid_parties_mc]
-MODELS_forstats = ['UNS', 'URS', 'RF', 'HYBRID']
+TESTS_forstats = [UNS_TEST_SET_2426, URS_TEST_SET_2426, RF_TEST_SET_2426, RF_UNS_HYBRID_TEST_SET_2426, UNS_TEST_SET_1924, URS_TEST_SET_1924, RF_TEST_SET_1924, RF_UNS_HYBRID_TEST_SET_1924]
+SEATS_forstats = [uns_seats_mc26, urs_seats_mc26, rf_seats_mc26, hybrid_seats_mc26, uns_seats_mc24, urs_seats_mc24, rf_seats_mc24, hybrid_seats_mc24]
+PARTIES_forstats = [uns_parties_mc26, urs_parties_mc26, rf_parties_mc26, hybrid_parties_mc26, uns_seats_mc24, urs_seats_mc24, rf_seats_mc24, hybrid_seats_mc24]
+MODELS_forstats = ['UNS26', 'URS26', 'RF26', 'HYBRID26', 'UNS24', 'URS24', 'RF24', 'HYBRID24']
 
 for name, test_set, seats, parties in zip(MODELS_forstats, TESTS_forstats, SEATS_forstats, PARTIES_forstats):
     most_likely, marginal_cons, margins, marginal = marginal_seats(test_set)
@@ -762,64 +879,131 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
     fig.subplots_adjust(top=0.78, bottom=0.25, left=0.02, right=0.98)
     plt.show()
 
-#plot_parliament(Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean), baseline=get_seats(GE24_clean))
+# plot_parliament(Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean), baseline=get_seats(GE24_clean))
 
-# UNS histogram attempt 
-keep = uns_seats_mc.mean(axis=0) > 3
-UNS_hist_array = uns_seats_mc[:, keep]
-UNS_hist_parties = [p for p, k in zip(uns_parties_mc, keep) if k]
+# distribution of number of seats for each party against runs x - (0-637), y (0-1000) - how many times the party achievied x amount of seats 
+
+# add up for each party the runs of seats each run of monte carlo simulation and add it to a list 
+
+# need to find what counts seats and records for each party 
+
+# UNS 26 histogram attempt 
+keep = uns_seats_mc26.mean(axis=0) > 3
+UNS_hist_array = uns_seats_mc26[:, keep]
+UNS_hist_parties = [p for p, k in zip(uns_parties_mc26, keep) if k]
 
 plt.figure()
 for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
-    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
-plt.title("UNS histogram")
+plt.title("UNS 26 histogram")
 plt.show()
 
-# URS histogram
-keep = urs_seats_mc.mean(axis=0) > 3
-URS_hist_array = urs_seats_mc[:, keep]
-URS_hist_parties = [p for p, k in zip(urs_parties_mc, keep) if k]
+# URS 26 histogram
+keep = urs_seats_mc26.mean(axis=0) > 3
+URS_hist_array = urs_seats_mc26[:, keep]
+URS_hist_parties = [p for p, k in zip(urs_parties_mc26, keep) if k]
 
 plt.figure()
 for party, data in zip(URS_hist_parties, URS_hist_array.T):
-    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
-plt.title("URS histogram")
+plt.title("URS 26 histogram")
 plt.show()
 
-# Random forest histogram
-keep = rf_seats_mc.mean(axis=0) > 3
-RF_hist_array = rf_seats_mc[:, keep]
-RF_hist_parties = [p for p, k in zip(rf_parties_mc, keep) if k]
+# Random forest 26 histogram
+keep = rf_seats_mc26.mean(axis=0) > 3
+RF_hist_array = rf_seats_mc26[:, keep]
+RF_hist_parties = [p for p, k in zip(rf_parties_mc26, keep) if k]
 
 plt.figure()
 for party, data in zip(RF_hist_parties, RF_hist_array.T):
-    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
-plt.title("RF histogram")
+plt.title("RF 26 histogram")
 plt.show()
 
-# Hybrid histogram
-keep = hybrid_seats_mc.mean(axis=0) > 3
-hybrid_hist_array = hybrid_seats_mc[:, keep]
-hybrid_hist_parties = [p for p, k in zip(hybrid_parties_mc, keep) if k]
+# Hybrid 26 histogram
+keep = hybrid_seats_mc26.mean(axis=0) > 3
+hybrid_hist_array = hybrid_seats_mc26[:, keep]
+hybrid_hist_parties = [p for p, k in zip(hybrid_parties_mc26, keep) if k]
 
 plt.figure()
 for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
-    plt.hist(data, bins=25, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
-plt.title("Hybrid histogram")
+plt.title("Hybrid 26 histogram")
 plt.show()
 
+# UNS 24 histogram attempt 
+keep = uns_seats_mc24.mean(axis=0) > 3
+UNS_hist_array = uns_seats_mc24[:, keep]
+UNS_hist_parties = [p for p, k in zip(uns_parties_mc24, keep) if k]
 
+plt.figure()
+for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("UNS 24 histogram")
+plt.show()
 
+# URS histogram
+keep = urs_seats_mc24.mean(axis=0) > 3
+URS_hist_array = urs_seats_mc24[:, keep]
+URS_hist_parties = [p for p, k in zip(urs_parties_mc24, keep) if k]
 
+plt.figure()
+for party, data in zip(URS_hist_parties, URS_hist_array.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("URS 24 histogram")
+plt.show()
+
+# Random forest histogram
+keep = rf_seats_mc24.mean(axis=0) > 3
+RF_hist_array = rf_seats_mc24[:, keep]
+RF_hist_parties = [p for p, k in zip(rf_parties_mc24, keep) if k]
+
+plt.figure()
+for party, data in zip(RF_hist_parties, RF_hist_array.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("RF 24 histogram")
+plt.show()
+
+# Hybrid histogram
+keep = hybrid_seats_mc24.mean(axis=0) > 3
+hybrid_hist_array = hybrid_seats_mc24[:, keep]
+hybrid_hist_parties = [p for p, k in zip(hybrid_parties_mc24, keep) if k]
+
+plt.figure()
+for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("Hybrid 24 histogram")
+plt.show()
