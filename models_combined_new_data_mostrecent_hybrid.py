@@ -901,8 +901,9 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
 # need to find what counts seats and records for each party 
 
 # UNS 26 histogram attempt 
-UNS_hist_array = uns_seats_mc26[:, uns_seats_mc26]
-UNS_hist_parties = [p for p, k in zip(uns_parties_mc26, uns_seats_mc26) if k]
+
+UNS_hist_array = uns_seats_mc26
+UNS_hist_parties = uns_parties_mc26
 
 plt.figure()
 for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
@@ -916,8 +917,8 @@ plt.title("UNS 26 histogram")
 plt.show()
 
 # URS 26 histogram
-URS_hist_array = urs_seats_mc26[:, urs_seats_mc26]
-URS_hist_parties = [p for p, k in zip(urs_parties_mc26, urs_seats_mc26) if k]
+URS_hist_array = urs_seats_mc26
+URS_hist_parties = urs_parties_mc26
 
 plt.figure()
 for party, data in zip(URS_hist_parties, URS_hist_array.T):
@@ -930,8 +931,8 @@ plt.title("URS 26 histogram")
 plt.show()
 
 # Random forest 26 histogram
-RF_hist_array = rf_seats_mc26[:, rf_seats_mc26]
-RF_hist_parties = [p for p, k in zip(rf_parties_mc26, rf_seats_mc26) if k]
+RF_hist_array = rf_seats_mc26
+RF_hist_parties = rf_parties_mc26
 
 plt.figure()
 for party, data in zip(RF_hist_parties, RF_hist_array.T):
@@ -944,8 +945,8 @@ plt.title("RF 26 histogram")
 plt.show()
 
 # Hybrid 26 histogram
-hybrid_hist_array = hybrid_seats_mc26[:, hybrid_seats_mc26]
-hybrid_hist_parties = [p for p, k in zip(hybrid_parties_mc26, hybrid_seats_mc26) if k]
+hybrid_hist_array = hybrid_seats_mc26
+hybrid_hist_parties = hybrid_parties_mc26
 
 plt.figure()
 for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
@@ -958,8 +959,8 @@ plt.title("Hybrid 26 histogram")
 plt.show()
 
 # UNS 24 histogram attempt 
-UNS_hist_array = uns_seats_mc24[:, uns_seats_mc24]
-UNS_hist_parties = [p for p, k in zip(uns_parties_mc24, uns_seats_mc24) if k]
+UNS_hist_array = uns_seats_mc24
+UNS_hist_parties = uns_parties_mc24
 
 plt.figure()
 for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
@@ -972,8 +973,8 @@ plt.title("UNS 24 histogram")
 plt.show()
 
 # URS histogram
-URS_hist_array = urs_seats_mc24[:, urs_seats_mc24]
-URS_hist_parties = [p for p, k in zip(urs_parties_mc24, urs_seats_mc24) if k]
+URS_hist_array = urs_seats_mc24
+URS_hist_parties = urs_parties_mc24
 
 plt.figure()
 for party, data in zip(URS_hist_parties, URS_hist_array.T):
@@ -1000,8 +1001,8 @@ plt.title("RF 24 histogram")
 plt.show()
 
 # Hybrid histogram
-hybrid_hist_array = hybrid_seats_mc24[:, hybrid_seats_mc24]
-hybrid_hist_parties = [p for p, k in zip(hybrid_parties_mc24, hybrid_seats_mc24) if k]
+hybrid_hist_array = hybrid_seats_mc24
+hybrid_hist_parties = hybrid_parties_mc24
 
 plt.figure()
 for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
