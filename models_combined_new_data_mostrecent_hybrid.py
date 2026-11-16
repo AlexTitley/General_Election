@@ -21,7 +21,7 @@ party_naming_convention = {
     "Green Party": ["Green Party", "Green", "Greens", "Grn", "Green Party of England and Wales", "GPEW", "Scottish Green Party", "Scottish Greens", "Scottish Green", "SGP", "Green Party Northern Ireland", "Green Party NI", "green_share"],
     "Scottish National Party": ["Scottish National Party", "SNP", "Scottish Nationalist Party", "snp_pc_share"],
     "Plaid Cymru": ["Plaid Cymru", "Plaid", "PC", "Plaid Cymru - The Party of Wales", "Plaid Cymru - Party of Wales", "snp_pc_share"],
-    "Other": ["nan" ,"other_share", "Other", "Others", "Oth", "Other parties", "Minor parties", "Independent", "Independents", "Ind", "IND", "Democratic Unionist Party", "DUP","Sinn Féin", "Sinn Fein", "SF", "Democratic Unionists","Alba Party", "Alba", "Ulster Unionist Party", "UUP", "Ulster Unionists", "Social Democratic & Labour Party", "SDLP", "Alliance Party of Northern Ireland", "Alliance", "APNI", "Alliance NI", "Your Party", 'YP', "Aontú", "Aontu", "Traditional Unionist Voice", "TUV", "Speaker", "Spk", "Speaker seeking re-election", "TUSC", "OMRLP", "Monster Raving Loony", "CPA", "WPB", "SLP", "SSP", "WEP", "AWP", "PBP", "People Before Profit", "CPB", "SDP", "BNP", "British National Party", "Yorkshire", "Yorkshire Party", "English Democrats", "EDP", "Abolish the Welsh Assembly Party", "Alliance for Democracy and Freedom", "Alliance for Green Socialism", "Animal Welfare Party", "Ashfield Independents", "Blue Revolution", "British Democratic Party", "British Unionist Party B.U.P.", "Chesterfield And North Derbyshire Independents (CANDI)", "Christian Party, Proclaiming Christ's Lordship", "Christian Peoples Alliance", "Climate Party", "Common Good", "Communist Future", "Communist League Election Campaign", "Communist Party of Britain", "Confelicity", "Consensus", "Count Binface Party", "Cross-Community Labour Alternative", "Democracy for Chorley", "English Constitution Party", "Fairer Voting Party", "Freedom Alliance", "Hampshire Independents", "Heritage Party", "Independence for Scotland Party", "Independent Alliance (Kent)", "Independent Network", "Independent Oxford Alliance", "Independents for Direct Democracy", "Kingston Independent Residents Group", "Liberal", "Libertarian Party", "Lincolnshire Independents Lincolnshire First", "Liverpool Community Independents", "National Health Action Party", "New Open Non-Political Organised Leadership", "Newham Independents Party", "Official Monster Raving Loony Party", "One Leicester", "Party of Women", "People Before Profit Alliance", "Portsmouth Independent Party", "Propel", "Psychedelic Movement", "Putting Crewe First, Independent Residents Group", "Rebooting Democracy", "Rejoin EU", "Save Us Now", "Scottish Family Party", "Scottish Libertarian Party", "Scottish Socialist Party", "Shared Ground", "Social Democratic Party", "Social Justice party", "Socialist Equality Party", "Socialist Labour Party", "Sovereignty", "South Devon Alliance", "Stockport Fights Austerity No To Cuts", "Swale Independents", "Taking The Initiative Party", "The Common People", "The Mitre TW9", "The North East Party", "The Peace Party - Non-violence, Justice, Environment", "The Socialist Party of Great Britain", "The Yorkshire Party", "The Yoruba Party in the UK", "Trade Unionist and Socialist Coalition", "Transform Party", "True & Fair Party", "UK Voice", "Volt United Kingdom", "Women's Equality Party", "Workers Party of Britain", "Workers Revolutionary Party","Young People's Party","Veterans and People's Party","The Best for Luton Party", "Advance Together","Heavy Woollen District Independents", "Birkenhead Social Justice Party", "Yeshua","Space Navies Party", "The Universal Good Party", "Renew","Church of the Militant Elvis Party", "The Independent Group for Change","Burnley and Padiham Independent Party", "Gwlad Gwlad", "Patria", "Advance Together","The Cynon Valley Party", "Communities United Party","The Justice & Anti-Corruption Party", "Young People's Party","The Citizens Movement Party UK", "Veterans and People's Party","Touch Love Worldwide (UK)", "The Best for Luton Party", "Shropshire Party","Proud of Oldham & Saddleworth", "Cumbria First","Mebyon Kernow - The Party for Cornwall", "Motherworld Party","Wycombe Independents", "The Constitution and Reform Party"],
+    "Other": ["nan" ,"other_share", "Other", "Others", "Oth", "Other parties", "Minor parties", "Independent", "Independents", "Ind", "IND", "The Workers' Party", "Open Borders Party", "Pirate Party UK", "Better for Bradford", "Money Free Party", "Concordia", "Humanity", "Wessex Regionalists", "Friends Party", "Scotland's Independence Referendum Party", "The Radical Party", "Something New", "Populist Party", "The Realists' Party", "The Just Political Party", "Apolitical Democrats", "North of England Community Alliance", "Independent Sovereign Democratic Britain", "Demos Direct Initiative Party", "The New Society of Worth", "Independent Save Withybush Save Lives", "Movement for Active Democracy (M.A.D.)", "Greater Manchester Homeless Voice", "Southampton Independents", "Southend Independent Association", "War Veteran's Pro-Traditional Family Party", "Citizens Independent Social Thought Alliance", "Compass Party", "National Front", "Justice for Men & Boys", "Vapers In Power", "Yorkshire First", "Patriotic Socialist Party", "All People's Party", "Left Unity", "The Republican Socialist Party", "Cannabis Is Safer Than Alcohol", "Red Flag - Anti-Corruption", "The 30-50 Coalition", "The Whig Party", "Respect Party", "Liberty GB", "The Northern Party", "Independence from Europe", "The Pilgrim Party", "Bournemouth Independent Alliance", "Independents for Bristol", "World Peace Through Song", "Alter Change - Politics. Only Different.", "The Above and Beyond Party", "Class War", "Christian Movement for Great Britain", "Mainstream", "The UK Progressive Democracy Party", "Putting Croydon First!", "British Independents", "Apni Party", "Europeans Party", "National Liberal Party - True Liberalism", "Beer, Baccy and Scratchings", "Guildford Greenbelt Group", "Campaign", "The U(niversal) Party", "Save Hartlepool Hospital", "Hoi Polloi", "Digital Democracy", "New Independent Centralists", "Democratic Reform Party", "The Pluralist Party", "People First - Gwerin Gyntaf", "The Sustainable Population Party", "Keep It Real Party", "Restore the Family For Children's Sake", "Party for a United Thanet", "The Party for Poole People Ltd.", "The Roman Party. Ave", "The Independent Political Alliance Party", "Islam Zinda Baad Platform", "Rochdale First Party", "Residents for Uttlesford", "We Are The Reality Party", "Children of the Atom", "The Democratic Party", "Al-Zebabist Nation of Ooog", "Manston Airport Independent Party", "Common Sense Party", "The Southport Party", "Ubuntu Party", "Population Party UK", "Free Public Transport Party", "The Principles of Politics Party", "Magna Carta Conservation Party Great Britain", "The Eccentric Party of Great Britain", "The Birthday Party", "Give Me Back Elmo", "Land Party", "Reduce VAT in Sport", "The Evolution Party", "Independent Kidderminster Hospital and Health Concern", "New Millennium Bean Party", "Scotland Against Crooked Lawyers", "English Independence Party", "The Scottish Jacobite Party", "Restoration Party", "All The South Party", "Hugh Salmon for Battersea Party", "A Vote Against MP Expense Abuse", "United Voice", "Trust", "Impact Party", "Local Liberals People Before Politics Party", "Bushra Irfan of Blackburn", "Integrity UK", "Blaenau Gwent People's Voice", "You Party", "The Science Party", "Scrap Members Allowances", "Democratic Nationalists", "Citizens for Undead Rights and Equality", "Bromsgrove Independent Conservative", "Cut The Deficit", "Alliance for Workers' Liberty", "Cambridge Socialists", "Get Snouts Out The Trough", "Money Reform Party", "Independent Save Our Green Belt", "The New Party", "Reduce Tax On Beer", "Blue Environment Party", "Tendring First", "Peoples Party Essex", "Socialist Alternative", "Justice Party", "Fancy Dress Party", "Independent Ealing Acton Communities Public Services", "Reform 2000 Party", "The Better Britain Party", "Best of a Bad Bunch", "Medway Independent Party", "The P.N.D.P.", "Matriarchal Party United Kingdom Great Britain", "The Magna Carta Party", "Direct Democracy (Communist) Party", "Independent Voice for Halifax", "Tamsin Omond to the Commons", "Your Right To Democracy Party Limited", "Animal Protection Party", "Save King George Hospital", "The Joy of Talk", "Middle England Party", "Unity for Peace and Socialism", "Independents Federation UK", "The Macclesfield Independent", "Freedom and Responsibility", "Mansfield Independents", "Solihull and Meriden Residents Association", "Nationwide Reform Party", "Northampton - Save Our Public Services", "Independents to Save Queen Mary's Hospital", "Equal Parenting Alliance", "Nobody Party", "The Youth Party", "Virtue Currency Cognitive Appraisal Party", "INDEPENDENT Leave-the-EU Alliance", "Fight For an Anti-War Government", "Campaign for Independent Politicians", "The Cornish Democrats", "No Candidate Deserves My Vote!", "City Independents", "Staffordshire Independent Group", "The True English (Poetry) Party", "Independent People Together", "Anticapitalists - Workers Power", "Democratic Labour Party", "Clause 28, Children's Protection Christian Democrats", "Democratic Unionist Party", "DUP","Sinn Féin", "Sinn Fein", "SF", "Democratic Unionists","Alba Party", "Alba", "Ulster Unionist Party", "UUP", "Ulster Unionists", "Social Democratic & Labour Party", "SDLP", "Alliance Party of Northern Ireland", "Alliance", "APNI", "Alliance NI", "Your Party", 'YP', "Aontú", "Aontu", "Traditional Unionist Voice", "TUV", "Speaker", "Spk", "Speaker seeking re-election", "TUSC", "OMRLP", "Monster Raving Loony", "CPA", "WPB", "SLP", "SSP", "WEP", "AWP", "PBP", "People Before Profit", "CPB", "SDP", "BNP", "British National Party", "Yorkshire", "Yorkshire Party", "English Democrats", "EDP", "Abolish the Welsh Assembly Party", "Alliance for Democracy and Freedom", "Alliance for Green Socialism", "Animal Welfare Party", "Ashfield Independents", "Blue Revolution", "British Democratic Party", "British Unionist Party B.U.P.", "Chesterfield And North Derbyshire Independents (CANDI)", "Christian Party, Proclaiming Christ's Lordship", "Christian Peoples Alliance", "Climate Party", "Common Good", "Communist Future", "Communist League Election Campaign", "Communist Party of Britain", "Confelicity", "Consensus", "Count Binface Party", "Cross-Community Labour Alternative", "Democracy for Chorley", "English Constitution Party", "Fairer Voting Party", "Freedom Alliance", "Hampshire Independents", "Heritage Party", "Independence for Scotland Party", "Independent Alliance (Kent)", "Independent Network", "Independent Oxford Alliance", "Independents for Direct Democracy", "Kingston Independent Residents Group", "Liberal", "Libertarian Party", "Lincolnshire Independents Lincolnshire First", "Liverpool Community Independents", "National Health Action Party", "New Open Non-Political Organised Leadership", "Newham Independents Party", "Official Monster Raving Loony Party", "One Leicester", "Party of Women", "People Before Profit Alliance", "Portsmouth Independent Party", "Propel", "Psychedelic Movement", "Putting Crewe First, Independent Residents Group", "Rebooting Democracy", "Rejoin EU", "Save Us Now", "Scottish Family Party", "Scottish Libertarian Party", "Scottish Socialist Party", "Shared Ground", "Social Democratic Party", "Social Justice party", "Socialist Equality Party", "Socialist Labour Party", "Sovereignty", "South Devon Alliance", "Stockport Fights Austerity No To Cuts", "Swale Independents", "Taking The Initiative Party", "The Common People", "The Mitre TW9", "The North East Party", "The Peace Party - Non-violence, Justice, Environment", "The Socialist Party of Great Britain", "The Yorkshire Party", "The Yoruba Party in the UK", "Trade Unionist and Socialist Coalition", "Transform Party", "True & Fair Party", "UK Voice", "Volt United Kingdom", "Women's Equality Party", "Workers Party of Britain", "Workers Revolutionary Party","Young People's Party","Veterans and People's Party","The Best for Luton Party", "Advance Together","Heavy Woollen District Independents", "Birkenhead Social Justice Party", "Yeshua","Space Navies Party", "The Universal Good Party", "Renew","Church of the Militant Elvis Party", "The Independent Group for Change","Burnley and Padiham Independent Party", "Gwlad Gwlad", "Patria", "Advance Together","The Cynon Valley Party", "Communities United Party","The Justice & Anti-Corruption Party", "Young People's Party","The Citizens Movement Party UK", "Veterans and People's Party","Touch Love Worldwide (UK)", "The Best for Luton Party", "Shropshire Party","Proud of Oldham & Saddleworth", "Cumbria First","Mebyon Kernow - The Party for Cornwall", "Motherworld Party","Wycombe Independents", "The Constitution and Reform Party"],
 }
 
 ['London','Rest of South', 'Midlands', 'North', 'Scotland','Wales']
@@ -402,6 +402,9 @@ GE10 = pd.read_csv('HoC-GE2010-results-by-candidate.csv')
 GE10_clean = np.stack((GE10['Constituency name'], GE10['Votes'] ,normalise_party_names(GE10['Party name'])))
 GE10_clean = GE10_clean[:, ~np.isin(GE10_clean[0], ni_constituencies)]
 
+GE05 = pd.read_csv('candidate-level-results-notional-general-election-05-05-2005.csv')
+GE05_clean = np.stack((GE05['Constituency name'], GE05['Candidate vote count'] ,normalise_party_names(GE05['Main party name'])))
+GE05_clean = GE05_clean[:, ~np.isin(GE05_clean[0], ni_constituencies)]
 
 
 
@@ -426,6 +429,71 @@ YouGov_19_24_sample_size = YouGov_19_24_all_adults[chosen_date].iloc[-1]
 YouGov_19_24_regional = [pd.read_excel('voting-intention-2019-2024 (1).xlsx', sheet_name=region) for region in YouGov_regions]
 YouGov_19_24_regional_clean = [np.stack((np.zeros(len(YouGov_19_24_party_names),),np.rint(YouGov_19_24_regional[x][chosen_date].iloc[:-2]*YouGov_19_24_regional[x][chosen_date].iloc[-2]),YouGov_19_24_party_names),dtype=object) for x in range(np.shape(YouGov_19_24_regional)[0])]
 YouGov_19_24_regional_sample_sizes = [YouGov_19_24_regional[x][chosen_date].iloc[-1] for x in range(np.shape(YouGov_19_24_regional)[0])]
+
+
+
+
+
+YouGov_10_15_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'SNP', 'Green', 'Other'])
+YouGov_10_15_wales_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'Plaid', 'Green', 'Other'])
+
+YouGov_10_15_all_adults_clean = np.stack((np.zeros(7), np.rint(np.array([34, 34, 10, 12, 5, 4, 1]) / 100 * 10083), YouGov_10_15_party_names), dtype=object)
+YouGov_10_15_sample_size = 10307
+
+YouGov_10_15_regions = ['London', 'Rest of South', 'Midlands', 'North', 'Scotland', 'Wales']
+YouGov_10_15_regional_shares = [[31, 42, 11, 9, 0, 5, 1], [43.1, 23.5, 12.4, 14.3, 0, 5.7, 0.7], [39, 35, 7, 14, 0, 4, 1],
+                                [29, 44, 7, 12, 0, 5, 2], [14, 28, 7, 1, 48, 1, 1], [25, 39, 8, 12, 13, 2, 2]]
+YouGov_10_15_regional_weighted_n = [1278, 3246, 1638, 2457, 949, 515]
+YouGov_10_15_regional_sample_sizes = [1093, 2970, 1487, 2204, 1351, 1202]
+YouGov_10_15_regional_clean = [np.stack((np.zeros(7), np.rint(np.array(s) / 100 * n), YouGov_10_15_wales_party_names if r == 'Wales' else YouGov_10_15_party_names), dtype=object)
+                               for r, s, n in zip(YouGov_10_15_regions, YouGov_10_15_regional_shares, YouGov_10_15_regional_weighted_n)]
+
+
+
+
+YouGov_15_17_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'SNP', 'Green', 'Other'])
+YouGov_15_17_wales_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'Plaid', 'Green', 'Other'])
+
+YouGov_15_17_all_adults_clean = np.stack((np.zeros(7), np.rint(np.array([42, 35, 10, 5, 5, 2, 1]) / 100 * 2130), YouGov_15_17_party_names), dtype=object)
+YouGov_15_17_sample_size = 2130
+
+YouGov_15_17_regions = ['London', 'Rest of South', 'Midlands', 'North', 'Scotland', 'Wales']
+YouGov_15_17_regional_shares = [[37, 41, 12, 7, 0, 3, 0], [50, 30, 13, 4, 0, 2, 2], [43, 34, 10, 6, 0, 2, 2],
+                                [38, 47, 7, 6, 0, 1, 1], [28, 22, 7, 0, 41, 0, 1], [43, 34, 10, 6, 3, 2, 2]]
+YouGov_15_17_regional_weighted_n = [256, 707, 458, 513, 196, 458]
+YouGov_15_17_regional_sample_sizes = [225, 747, 440, 524, 194, 440]
+YouGov_15_17_regional_clean = [np.stack((np.zeros(7), np.rint(np.array(s) / 100 * n), YouGov_15_17_wales_party_names if r == 'Wales' else YouGov_15_17_party_names), dtype=object)
+                               for r, s, n in zip(YouGov_15_17_regions, YouGov_15_17_regional_shares, YouGov_15_17_regional_weighted_n)]
+
+
+
+
+
+YouGov_05_10_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'SNP', 'BNP', 'Green', 'Other'])
+YouGov_05_10_wales_party_names = normalise_party_names(['Con', 'Lab', 'Lib Dem', 'UKIP', 'Plaid', 'BNP', 'Green', 'Other'])
+
+
+YouGov_05_10_all_adults_clean = np.stack((np.zeros(8), np.rint(np.array([35, 28, 28, 3, 2, 2, 1, 1]) / 100 * 6483), YouGov_05_10_party_names), dtype=object)
+YouGov_05_10_sample_size = 6483
+YouGov_05_10_regions = ['London', 'Rest of South', 'Midlands', 'North', 'Scotland', 'Wales']
+YouGov_05_10_regional_shares = [[35, 31, 26, 4, 0, 1, 1, 1], [43, 18, 31, 4, 0, 1, 1, 1], [37, 27, 27, 4, 0, 1, 1, 1],
+                                [28, 38, 26, 3, 0, 3, 1, 1], [15, 37, 24, 1, 19, 1, 1, 1], [37, 27, 27, 4, 2, 1, 1, 1]]
+YouGov_05_10_regional_weighted_n = [829, 2108, 1386, 1596, 564, 1386]
+YouGov_05_10_regional_sample_sizes = [908, 2177, 1230, 1534, 634, 1230]
+YouGov_05_10_regional_clean = [np.stack((np.zeros(8), np.rint(np.array(s) / 100 * n), YouGov_05_10_wales_party_names if r == 'Wales' else YouGov_05_10_party_names), dtype=object)
+                               for r, s, n in zip(YouGov_05_10_regions, YouGov_05_10_regional_shares, YouGov_05_10_regional_weighted_n)]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 collected_data = pd.read_csv("train_test_dataset_new.csv")                                       # Preparing the data into X feature matrix and y target vectors
@@ -907,7 +975,7 @@ UNS_hist_parties = uns_parties_mc26
 
 plt.figure()
 for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
@@ -922,7 +990,7 @@ URS_hist_parties = urs_parties_mc26
 
 plt.figure()
 for party, data in zip(URS_hist_parties, URS_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
@@ -936,7 +1004,7 @@ RF_hist_parties = rf_parties_mc26
 
 plt.figure()
 for party, data in zip(RF_hist_parties, RF_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
@@ -950,7 +1018,7 @@ hybrid_hist_parties = hybrid_parties_mc26
 
 plt.figure()
 for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
@@ -964,7 +1032,7 @@ UNS_hist_parties = uns_parties_mc24
 
 plt.figure()
 for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
@@ -978,7 +1046,7 @@ URS_hist_parties = urs_parties_mc24
 
 plt.figure()
 for party, data in zip(URS_hist_parties, URS_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
@@ -987,12 +1055,12 @@ plt.title("URS 24 histogram")
 plt.show()
 
 # Random forest histogram
-RF_hist_array = rf_seats_mc24[:, rf_seats_mc24]
-RF_hist_parties = [p for p, k in zip(rf_parties_mc24, rf_seats_mc24) if k]
+RF_hist_array = rf_seats_mc24
+RF_hist_parties =rf_parties_mc24
 
 plt.figure()
 for party, data in zip(RF_hist_parties, RF_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
@@ -1006,7 +1074,7 @@ hybrid_hist_parties = hybrid_parties_mc24
 
 plt.figure()
 for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
-    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 1)
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
 plt.legend()
 plt.xlabel("Seats")
