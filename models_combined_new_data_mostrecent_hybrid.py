@@ -671,10 +671,6 @@ hybrid_parties26 = np.concatenate([c[2] for c in hybrid_raw26])
 hybrid_dataset26 = np.stack((hybrid_names26, hybrid_shares26, hybrid_parties26), dtype=object)
 hybrid_parties26, hybrid_seats26 = get_seats(hybrid_dataset26)
 
-act_parties26, act_counts26 = get_seats(GE24_clean)
-actual26 = dict(zip(act_parties26, act_counts26))
-actual_vals26 = [actual26.get(p, 0) for p in names]  
-
 # building chart 
 
 all_parties = sorted(list(set(
@@ -741,9 +737,7 @@ ax.bar(x + 0.5*w, val_hybrid_det26, w, color="#d9b0fb", label="Hybrid (Det)")
 ax.bar(x + 1.5*w, val_uns26,    w, color="#C8374A", label="Plain UNS (Det)")
 ax.bar(x + 2.5*w, val_urs26,    w, color="#f1c40f", label="Plain URS (Det)")
 ax.bar(x + 3.5*w, val_rf_det26, w, color="#5BAA6A", label="Random Forest (Det)")
-ax.scatter(names, actual_vals26, color="black", marker="*", s=150, zorder=4,
-           label="Actual 2024 result")
-ax.legend()
+
 ax.axhline(326, color="black", linestyle="--", linewidth=1)
 ax.text(len(all_parties) - 0.5, 330, "326 for a majority", ha="right", fontsize=8, fontweight="bold")
 
@@ -792,7 +786,7 @@ hybrid_parties24 = np.concatenate([c[2] for c in hybrid_raw24])
 hybrid_dataset24 = np.stack((hybrid_names24, hybrid_shares24, hybrid_parties24), dtype=object)
 hybrid_parties24, hybrid_seats24 = get_seats(hybrid_dataset24)
 
-act_parties24, act_counts24 = get_seats(GE19_clean)
+act_parties24, act_counts24 = get_seats(GE24_clean)
 actual24 = dict(zip(act_parties24, act_counts24))
 actual_vals24 = [actual24.get(p, 0) for p in names]  
 
@@ -808,6 +802,8 @@ all_parties = sorted(list(set(
 ))))
 
 all_parties.sort(key=lambda p: mc_mean_dict_rf24.get(p, mc_mean_dict_uns24.get(p, 0)), reverse=True)
+
+actual_vals24 = [actual24.get(p, 0) for p in all_parties]  
 
 x = np.arange(len(all_parties))
 w = 0.12
@@ -863,7 +859,7 @@ ax.bar(x + 1.5*w, val_uns24,    w, color="#C8374A", label="Plain UNS (Det)")
 ax.bar(x + 2.5*w, val_urs24,    w, color="#f1c40f", label="Plain URS (Det)")
 ax.bar(x + 3.5*w, val_rf_det24, w, color="#5BAA6A", label="Random Forest (Det)")
 ax.scatter(names, actual_vals24, color="black", marker="*", s=150, zorder=4,
-           label="Actual 2019 result")
+           label="Actual 2024 result")
 ax.legend()
 
 ax.axhline(326, color="black", linestyle="--", linewidth=1)
@@ -1004,12 +1000,6 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
 
 # plot_parliament(Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean), baseline=get_seats(GE24_clean))
 
-# distribution of number of seats for each party against runs x - (0-637), y (0-1000) - how many times the party achievied x amount of seats 
-
-# add up for each party the runs of seats each run of monte carlo simulation and add it to a list 
-
-# need to find what counts seats and records for each party 
-
 # UNS 26 histogram attempt 
 
 UNS_hist_array = uns_seats_mc26
@@ -1034,6 +1024,7 @@ plt.figure()
 for party, data in zip(URS_hist_parties, URS_hist_array.T):
     bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
@@ -1048,6 +1039,7 @@ plt.figure()
 for party, data in zip(RF_hist_parties, RF_hist_array.T):
     bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
@@ -1062,6 +1054,7 @@ plt.figure()
 for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
     bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
@@ -1076,6 +1069,7 @@ plt.figure()
 for party, data in zip(UNS_hist_parties, UNS_hist_array.T):
     bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
@@ -1090,6 +1084,7 @@ plt.figure()
 for party, data in zip(URS_hist_parties, URS_hist_array.T):
     bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
@@ -1104,6 +1099,7 @@ plt.figure()
 for party, data in zip(RF_hist_parties, RF_hist_array.T):
     bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
@@ -1118,6 +1114,7 @@ plt.figure()
 for party, data in zip(hybrid_hist_parties, hybrid_hist_array.T):
     bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
     plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
 plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
