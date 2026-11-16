@@ -949,12 +949,24 @@ def marginal_seats(test_set):
 
     return most_likely, marginal_cons, margins, marginal
 
+mc_mean_dict_uns19, mc_lo_dict_uns19, mc_hi_dict_uns19, uns_mc_runs19, uns_parties_mc19, uns_seats_mc19 = model_dict(UNS_TEST_SET_1719)
+mc_mean_dict_urs19, mc_lo_dict_urs19, mc_hi_dict_urs19, urs_mc_runs19, urs_parties_mc19, urs_seats_mc19 = model_dict(URS_TEST_SET_1719)
+
+mc_mean_dict_uns17, mc_lo_dict_uns17, mc_hi_dict_uns17, uns_mc_runs17, uns_parties_mc17, uns_seats_mc17 = model_dict(UNS_TEST_SET_1517)
+mc_mean_dict_urs17, mc_lo_dict_urs17, mc_hi_dict_urs17, urs_mc_runs17, urs_parties_mc17, urs_seats_mc17 = model_dict(URS_TEST_SET_1517)
+
+mc_mean_dict_uns15, mc_lo_dict_uns15, mc_hi_dict_uns15, uns_mc_runs15, uns_parties_mc15, uns_seats_mc15 = model_dict(UNS_TEST_SET_1015)
+mc_mean_dict_urs15, mc_lo_dict_urs15, mc_hi_dict_urs15, urs_mc_runs15, urs_parties_mc15, urs_seats_mc15 = model_dict(URS_TEST_SET_1015)
+
+mc_mean_dict_uns10, mc_lo_dict_uns10, mc_hi_dict_uns10, uns_mc_runs10, uns_parties_mc10, uns_seats_mc10 = model_dict(UNS_TEST_SET_0510)
+mc_mean_dict_urs10, mc_lo_dict_urs10, mc_hi_dict_urs10, urs_mc_runs10, urs_parties_mc10, urs_seats_mc10 = model_dict(URS_TEST_SET_0510)
+
 # variables needed for each model in dict; test_set, seats
 # e.g. random forest, RF_test_set, rf_mean_mc_seats 
-TESTS_forstats = [UNS_TEST_SET_2426, URS_TEST_SET_2426, RF_TEST_SET_2426, RF_UNS_HYBRID_TEST_SET_2426, UNS_TEST_SET_1924, URS_TEST_SET_1924, RF_TEST_SET_1924, RF_UNS_HYBRID_TEST_SET_1924]
-SEATS_forstats = [uns_seats_mc26, urs_seats_mc26, rf_seats_mc26, hybrid_seats_mc26, uns_seats_mc24, urs_seats_mc24, rf_seats_mc24, hybrid_seats_mc24]
-PARTIES_forstats = [uns_parties_mc26, urs_parties_mc26, rf_parties_mc26, hybrid_parties_mc26, uns_seats_mc24, urs_seats_mc24, rf_seats_mc24, hybrid_seats_mc24]
-MODELS_forstats = ['UNS26', 'URS26', 'RF26', 'HYBRID26', 'UNS24', 'URS24', 'RF24', 'HYBRID24']
+TESTS_forstats = [UNS_TEST_SET_2426, URS_TEST_SET_2426, RF_TEST_SET_2426, RF_UNS_HYBRID_TEST_SET_2426, UNS_TEST_SET_1924, URS_TEST_SET_1924, RF_TEST_SET_1924, RF_UNS_HYBRID_TEST_SET_1924, UNS_TEST_SET_1719, URS_TEST_SET_1719, UNS_TEST_SET_1517, URS_TEST_SET_1517, UNS_TEST_SET_1015, URS_TEST_SET_1015, UNS_TEST_SET_0510, URS_TEST_SET_0510]
+SEATS_forstats = [uns_seats_mc26, urs_seats_mc26, rf_seats_mc26, hybrid_seats_mc26, uns_seats_mc24, urs_seats_mc24, rf_seats_mc24, hybrid_seats_mc24, uns_seats_mc19, urs_seats_mc19, uns_seats_mc17, urs_seats_mc17, uns_seats_mc15, urs_seats_mc15, uns_seats_mc10, urs_seats_mc10]
+PARTIES_forstats = [uns_parties_mc26, urs_parties_mc26, rf_parties_mc26, hybrid_parties_mc26, uns_parties_mc24, urs_parties_mc24, rf_parties_mc24, hybrid_parties_mc24, uns_parties_mc19, urs_parties_mc19, uns_parties_mc17, urs_parties_mc17, uns_parties_mc15, urs_parties_mc15, uns_parties_mc10, urs_parties_mc10]
+MODELS_forstats = ['UNS26', 'URS26', 'RF26', 'HYBRID26', 'UNS24', 'URS24', 'RF24', 'HYBRID24', 'UNS19', 'URS19', 'UNS17', 'URS17', 'UNS15', 'URS15', 'UNS10', 'URS10']
 
 for name, test_set, seats, parties in zip(MODELS_forstats, TESTS_forstats, SEATS_forstats, PARTIES_forstats):
     most_likely, marginal_cons, margins, marginal = marginal_seats(test_set)
@@ -1141,4 +1153,126 @@ plt.legend()
 plt.xlabel("Seats")
 plt.ylabel("Number of runs")
 plt.title("Hybrid 24 histogram")
+plt.show()
+
+# UNS 19 histogram attempt 
+
+UNS_hist_array19 = uns_seats_mc19
+UNS_hist_parties19 = uns_parties_mc19
+
+plt.figure()
+for party, data in zip(UNS_hist_parties19, UNS_hist_array19.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("UNS 19 histogram")
+plt.show()
+
+# URS 19 histogram
+URS_hist_array19 = urs_seats_mc19
+URS_hist_parties19 = urs_parties_mc19
+
+plt.figure()
+for party, data in zip(URS_hist_parties19, URS_hist_array19.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("URS 19 histogram")
+plt.show()
+
+# UNS 17 histogram attempt 
+
+UNS_hist_array17 = uns_seats_mc17
+UNS_hist_parties17 = uns_parties_mc17
+
+plt.figure()
+for party, data in zip(UNS_hist_parties17, UNS_hist_array17.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("UNS 17 histogram")
+plt.show()
+
+# URS 17 histogram
+URS_hist_array17 = urs_seats_mc17
+URS_hist_parties17 = urs_parties_mc17
+
+plt.figure()
+for party, data in zip(URS_hist_parties17, URS_hist_array17.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("URS 17 histogram")
+plt.show()
+
+# UNS 15 histogram attempt 
+
+UNS_hist_array15 = uns_seats_mc15
+UNS_hist_parties15 = uns_parties_mc15
+
+plt.figure()
+for party, data in zip(UNS_hist_parties15, UNS_hist_array15.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("UNS 15 histogram")
+plt.show()
+
+# URS 15 histogram
+URS_hist_array15 = urs_seats_mc15
+URS_hist_parties15 = urs_parties_mc15
+
+plt.figure()
+for party, data in zip(URS_hist_parties15, URS_hist_array15.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("URS 15 histogram")
+plt.show()
+
+UNS_hist_array10 = uns_seats_mc10
+UNS_hist_parties10 = uns_parties_mc10
+
+plt.figure()
+for party, data in zip(UNS_hist_parties10, UNS_hist_array10.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("UNS 15 histogram")
+plt.show()
+
+# URS 15 histogram
+URS_hist_array10 = urs_seats_mc10
+URS_hist_parties10 = urs_parties_mc10
+
+plt.figure()
+for party, data in zip(URS_hist_parties10, URS_hist_array10.T):
+    bins = np.arange(data.min() - 0.5, data.max() + 1.5, 10)
+    plt.hist(data, bins=bins, alpha=0.5, label=party, color=COLOURS.get(party, "#9EA3AB"))
+plt.axvline(326, color="black", linestyle="--", linewidth=1)
+plt.legend()
+plt.xlabel("Seats")
+plt.ylabel("Number of runs")
+plt.title("URS 15 histogram")
 plt.show()
