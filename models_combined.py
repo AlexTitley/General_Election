@@ -165,12 +165,20 @@ def year_based_time_series_cv(years, n_splits=3):
 
 
 PARAM_GRID = {
+    'n_estimators': [100],
+    'max_depth': [20],
+    'min_samples_leaf': [3],
+    'max_features': [0.5],
+}
+
+'''
+PARAM_GRID = {
     'n_estimators': [100,250,500],
     'max_depth': [None, 10, 20, 30, 40, 50, 60],
     'min_samples_leaf': [1, 3, 5, 7],
     'max_features': ['sqrt', 0.25, 0.5, 0.75],
 }
-
+'''
 
 def random_forest(dataset,backtest=False):
     df = dataset
@@ -341,6 +349,13 @@ TESTS.append(monte_carlo_raw(TEST_SET,1000))
 #------------------------------------------Regional Swing---------------------------------------------
 TEST_SET = URS(GE19_clean,YouGov_19_24_regional_clean,YouGov_19_24_regional_sample_sizes,YouGov_regions,raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000))
+for x in TEST_SET:
+    print(x[0])
+    print(x[1][0])
+    print(x[2])
+
+
+
 
 TEST_SET = URS(GE24_clean,YouGov_26_regional_clean,YouGov_26_regional_sample_sizes,YouGov_regions,raw=True)
 TESTS.append(monte_carlo_raw(TEST_SET,1000))

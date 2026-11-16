@@ -375,7 +375,6 @@ def URS(prev_election,  forecast_regional_data, forecast_sample_sizes,regions, r
     else:
         totals = {}
         for region, (parties, counts) in predicted_votes_by_region.items():
-            print(region, dict(zip(parties, counts)))
             for party, count in zip(parties, counts):
                 totals[party] = totals.get(party, 0) + count
         return list(totals.keys()), list(totals.values())
@@ -390,6 +389,21 @@ GE24_clean = GE24_clean[:, ~np.isin(GE24_clean[0], ni_constituencies)]
 GE19 = pd.read_csv('HoC-GE2019-results-by-candidate.csv')
 GE19_clean = np.stack((GE19['Constituency name'], GE19['Votes'] ,normalise_party_names(GE19['Party name'])))
 GE19_clean = GE19_clean[:, ~np.isin(GE19_clean[0], ni_constituencies)]
+
+GE17 = pd.read_csv('HoC-GE2017-results-by-candidate.csv')
+GE17_clean = np.stack((GE17['Constituency name'], GE17['Votes'] ,normalise_party_names(GE17['Party name'])))
+GE17_clean = GE17_clean[:, ~np.isin(GE17_clean[0], ni_constituencies)]
+
+GE15 = pd.read_csv('HoC-GE2015-results-by-candidate.csv')
+GE15_clean = np.stack((GE15['Constituency name'], GE15['Votes'] ,normalise_party_names(GE15['Party name'])))
+GE15_clean = GE15_clean[:, ~np.isin(GE15_clean[0], ni_constituencies)]
+
+GE10 = pd.read_csv('HoC-GE2010-results-by-candidate.csv')
+GE10_clean = np.stack((GE10['Constituency name'], GE10['Votes'] ,normalise_party_names(GE10['Party name'])))
+GE10_clean = GE10_clean[:, ~np.isin(GE10_clean[0], ni_constituencies)]
+
+
+
 
 YouGov_regions = ['London','Rest of South', 'Midlands', 'North', 'Scotland','Wales']
 
@@ -487,7 +501,6 @@ for TEST, name in zip(TESTS, MODEL_NAMES):
 
 
 
-###-----------------------------------------Vibecoded Graphs-----------------------------------------###
 ORDER = ["Labour", "Conservative", "Liberal Democrat", "Reform UK",
          "Scottish National Party", "Others & NI", "Plaid Cymru", "Green Party"]
 COLOURS = {"Labour": "#C8374A", "Conservative": "#4A84D4", "Liberal Democrat": "#E8A844",
@@ -888,7 +901,7 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
 # need to find what counts seats and records for each party 
 
 # UNS 26 histogram attempt 
-UNS_hist_array = uns_seats_mc26[:, uns_seast_mc26]
+UNS_hist_array = uns_seats_mc26[:, uns_seats_mc26]
 UNS_hist_parties = [p for p, k in zip(uns_parties_mc26, uns_seats_mc26) if k]
 
 plt.figure()
