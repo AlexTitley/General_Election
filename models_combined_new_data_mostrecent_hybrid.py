@@ -1034,6 +1034,184 @@ def plot_parliament(result, baseline=None, title="Uniform National Swing (UNS) p
 
 # plot_parliament(Uniform_Swing(GE24_clean, YouGov_26_all_adults_clean), baseline=get_seats(GE24_clean))
 
+
+## Mapping Functions
+
+BOUNDARY_FILE = "uk_constituencies.geojson"
+DRAW_CERTAINTY_MAPS = True
+CERTAINTY_ITERATIONS = 300       # simulations used for the certainty maps - can be changed
+NO_DATA_COLOUR = "#E0E0E0"
+
+
+def _key(name):
+# normalise a constituency name, the spellings were sometimes different so this is a fix for that error
+    name = unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode()
+    name = name.lower().replace("&", "and")
+    name = re.sub(r"[^a-z0-9 ]", " ", name)
+    return re.sub(r"\s+", " ", name).strip()
+
+
+def _strip_year(name):
+# the output earlier gave error bc it produced name_year, but i want just the name
+    return re.sub(r"\d{4}$", "", str(name))
+
+
+_wales_keys = {_key(n) for n in constituency_regions["Wales"]}
+_scotland_keys = {_key(n) for n in constituency_regions["Scotland"]}
+
+
+def _fix_party(seat_name, party):
+# remove the irish, also welsh seats voting for snp are now plaid
+    k = _key(seat_name)
+    if party == "Scottish National Party" and k in _wales_keys:
+        return "Plaid Cymru"
+    if party == "Plaid Cymru" and k in _scotland_keys:
+        return "Scottish National Party"
+    return party
+
+
+def deterministic_winners(test_set):
+# meaning (to help): {constituency: winning party} from the point forecast (highest predicted share)
+    return {_strip_year(c[0]): c[2][int(np.argmax(c[1][0]))] for c in test_set}
+
+
+def actual_winners(clean_dataset):
+# meaning: {constituency: winning party} from a results array like GE24_clean
+    return dict(zip(pd.unique(clean_dataset[0]), get_winners(clean_dataset)))
+
+
+def winner_probabilities(test_set, iterations=CERTAINTY_ITERATIONS):
+# meaning: {constituency: (most likely winner, share of simulations they won)}
+    sims = monte_carlo_winners(test_set, iterations)            
+    out = {}
+    for s, c in enumerate(test_set):
+        parties_, counts = np.unique(sims[:, s], return_counts=True)
+        out[_strip_year(c[0])] = (parties_[counts.argmax()], counts.max() / iterations)
+    return out
+
+
+def load_boundaries(path=BOUNDARY_FILE):
+    gdf = gpd.read_file(path)
+
+    name_col = next((c for c in gdf.columns
+        if c.upper().startswith("PCON") and c.upper().endswith("NM")), None)
+    if name_col is None and "name" in gdf.columns:     
+        name_col = "name"
+
+    if name_col is None:
+        raise ValueError(f"No constituency-name column found. Columns are: {list(gdf.columns)}")
+    
+    code_col = next((c for c in gdf.columns
+        if c.upper().startswith("PCON") and c.upper().endswith("CD")), None)
+    
+    if code_col is None and "code" in gdf.columns:
+        code_col = "code"
+
+    gdf["_name"] = gdf[name_col]
+    gdf["_key"] = gdf["_name"].map(_key)
+
+    if code_col is not None:
+        gdf["_is_ni"] = gdf[code_col].astype(str).str.upper().str.startswith("N")   # get rid of northern ireland, useless
+    else:
+        gdf["_is_ni"] = gdf["_key"].isin({_key(n) for n in ni_constituencies})
+        
+    if gdf.crs is None:
+        gdf = gdf.set_crs(epsg=4326)
+    return gdf.to_crs(epsg=27700)
+
+
+def plot_winner_map(winners, title, boundaries, certainty=None, filename=None):
+    """winners: {constituency: party}. certainty: optional {constituency: 0-1} -> paler = less certain."""
+    gdf = boundaries.copy()
+    winner_by_key = {_key(n): _fix_party(n, p) for n, p in winners.items()}
+    gdf["winner"] = gdf["_key"].map(winner_by_key)
+
+
+   
+    unmatched_map = gdf.loc[gdf["winner"].isna() & ~gdf["_is_ni"], "_name"].tolist()
+    unmatched_model = sorted(set(winner_by_key) - set(gdf["_key"]))
+    print(f"[{title}] matched {gdf['winner'].notna().sum()} seats; "
+          f"{len(unmatched_map)} map areas without a prediction; "
+          f"{len(unmatched_model)} predicted seats not found on the map")
+    if unmatched_map:
+        print("   map areas with no prediction:", unmatched_map[:15], "..." if len(unmatched_map) > 15 else "")
+    if unmatched_model:
+        print("   predicted seats not on map:", unmatched_model[:15], "..." if len(unmatched_model) > 15 else "")
+
+    #vibecoded certainty maps
+
+    certainty_by_key = {_key(n): v for n, v in certainty.items()} if certainty else {}
+    colours = []
+    colours = []
+
+    
+    for k, party in zip(gdf["_key"], gdf["winner"]):
+        if not isinstance(party, str):
+            colours.append(mcolors.to_hex(NO_DATA_COLOUR))
+            continue
+        base = mcolors.to_rgb(COLOURS.get(party, COLOURS["Others & NI"]))
+        certainty_value = certainty_by_key.get(k, 1.0) if certainty_by_key else 1.0
+        if certainty_by_key:
+            a = 0.35 + 0.65 * certainty_value
+            base = tuple(a * ch + (1 - a) for ch in base)
+        colours.append(mcolors.to_hex(base))
+
+    print("colour types:", {type(c).__name__ for c in colours}, "| count:", len(colours))
+
+    fig, ax = plt.subplots(figsize=(8, 11))
+    gdf.plot(ax=ax, color=colours, edgecolor="white", linewidth=0.15)
+    ax.set_axis_off()
+
+    tally = gdf["winner"].value_counts()
+    handles = [Patch(facecolor=COLOURS.get(p, COLOURS["Others & NI"]), label=f"{p} ({tally.get(p, 0)})")
+        for p in ORDER + [x for x in tally.index if x not in ORDER] if tally.get(p, 0) > 0]
+    handles.append(Patch(facecolor=NO_DATA_COLOUR, label="Northern Ireland / not modelled"))
+    ax.legend(handles=handles, loc="upper left", frameon=False, fontsize=9)
+    suffix = "  (paler = less certain)" if certainty else ""
+    ax.set_title(title + suffix, fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    if filename:
+        fig.savefig(filename, dpi=200, bbox_inches="tight")
+    plt.show()
+
+
+import glob
+print("Working dir:", os.getcwd())
+print("Geo files here:", glob.glob("*.geo*") + glob.glob("*.json") + glob.glob("*.shp"))
+
+map_boundaries = load_boundaries()
+
+# 2024 result for reference, helps comparison. CAN BE CHANGED HOPEFULLY to another year. since we already have a dictionary of old and new constituency
+# names, we dont need a seperate 2011.GEOJSON file
+plot_winner_map(actual_winners(GE24_clean), "Actual 2024 general election winners",
+      map_boundaries, filename="map_actual_2024.png")
+
+
+MAP_MODELS = {
+    "UNS 2026 forecast":    UNS_TEST_SET_2426,
+    "URS 2026 forecast":    URS_TEST_SET_2426,
+    "RF 2026 forecast":     RF_TEST_SET_2426,
+    "Hybrid 2026 forecast": RF_UNS_HYBRID_TEST_SET_2426,
+    "RF 2024 backtest":     RF_TEST_SET_1924,
+    "Hybrid 2024 backtest": RF_UNS_HYBRID_TEST_SET_1924,
+}
+
+for map_name, map_set in MAP_MODELS.items():
+    plot_winner_map(deterministic_winners(map_set), f"{map_name}: predicted constituency winners",
+       map_boundaries, filename=f"map_{map_name.replace(' ', '_')}.png")
+
+if DRAW_CERTAINTY_MAPS:
+    for map_name in ["RF 2026 forecast", "Hybrid 2026 forecast"]:
+        probs_ = winner_probabilities(MAP_MODELS[map_name])
+        plot_winner_map({n: p for n, (p, _) in probs_.items()},
+              f"{map_name}: most likely winner", map_boundaries,
+              certainty={n: pr for n, (_, pr) in probs_.items()},
+              filename=f"map_{map_name.replace(' ', '_')}_certainty.png")
+
+
+# end mapping functions
+
+
 # UNS 26 histogram attempt 
 
 UNS_hist_array = uns_seats_mc26
