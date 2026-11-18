@@ -914,11 +914,11 @@ det_urs19 = dict(zip(det_parties_URS19, det_seats_URS19))
 det_vals_URS19 = [det_urs19.get(p, 0) for p in names]
 
 # Get deterministic UNS values 
-det_parties_UNS19, det_seats_UNS19 = Uniform_Swing(GE19_clean, YouGov_19_24_all_adults_clean, YouGov_19_24_sample_size, raw=False)
+det_parties_UNS19, det_seats_UNS19 = Uniform_Swing(GE17_clean, YouGov_19_24_all_adults_clean, YouGov_19_24_sample_size, raw=False)
 det_uns19 = dict(zip(det_parties_UNS19, det_seats_UNS19))
 det_vals_UNS19 = [det_uns19.get(p, 0) for p in names]
 
-act_parties19, act_counts19 = get_seats(GE17_clean)
+act_parties19, act_counts19 = get_seats(GE19_clean)
 actual19 = dict(zip(act_parties19, act_counts19))
 actual_vals19 = [actual19.get(p, 0) for p in names]  
 
@@ -996,11 +996,11 @@ det_urs17 = dict(zip(det_parties_URS17, det_seats_URS17))
 det_vals_URS17 = [det_urs17.get(p, 0) for p in names]
 
 # Get deterministic UNS values 
-det_parties_UNS17, det_seats_UNS17 = Uniform_Swing(GE17_clean, YouGov_15_17_all_adults_clean, YouGov_15_17_sample_size, raw=False)
+det_parties_UNS17, det_seats_UNS17 = Uniform_Swing(GE15_clean, YouGov_15_17_all_adults_clean, YouGov_15_17_sample_size, raw=False)
 det_uns17 = dict(zip(det_parties_UNS17, det_seats_UNS17))
 det_vals_UNS17 = [det_uns17.get(p, 0) for p in names]
 
-act_parties17, act_counts17 = get_seats(GE15_clean)
+act_parties17, act_counts17 = get_seats(GE17_clean)
 actual17 = dict(zip(act_parties17, act_counts17))
 actual_vals17 = [actual17.get(p, 0) for p in names]  
 
@@ -1069,16 +1069,16 @@ mc_mean_dict_uns15, mc_lo_dict_uns15, mc_hi_dict_uns15, uns_mc_runs15, uns_parti
 mc_mean_dict_urs15, mc_lo_dict_urs15, mc_hi_dict_urs15, urs_mc_runs15, urs_parties_mc15, urs_seats_mc15 = model_dict(URS_TEST_SET_1015)
 
 # Get deterministic URS values 
-det_parties_URS15, det_seats_URS15 = URS(GE15_clean, YouGov_10_15_regional_clean, YouGov_10_15_regional_sample_sizes, YouGov_regions, raw=False)
+det_parties_URS15, det_seats_URS15 = URS(GE10_clean, YouGov_10_15_regional_clean, YouGov_10_15_regional_sample_sizes, YouGov_regions, raw=False)
 det_urs15 = dict(zip(det_parties_URS15, det_seats_URS15))
 det_vals_URS15 = [det_urs15.get(p, 0) for p in names]
 
 # Get deterministic UNS values 
-det_parties_UNS15, det_seats_UNS15 = Uniform_Swing(GE15_clean, YouGov_10_15_all_adults_clean, YouGov_10_15_sample_size, raw=False)
+det_parties_UNS15, det_seats_UNS15 = Uniform_Swing(GE10_clean, YouGov_10_15_all_adults_clean, YouGov_10_15_sample_size, raw=False)
 det_uns15 = dict(zip(det_parties_UNS15, det_seats_UNS15))
 det_vals_UNS15 = [det_uns15.get(p, 0) for p in names]
 
-act_parties15, act_counts15 = get_seats(GE10_clean)
+act_parties15, act_counts15 = get_seats(GE15_clean)
 actual15 = dict(zip(act_parties15, act_counts15))
 actual_vals15 = [actual15.get(p, 0) for p in names]  
 
@@ -1136,6 +1136,84 @@ ax.set_xticklabels(all_parties, rotation=45, ha="right")
 ax.set_xlabel("Party", fontweight="bold")
 ax.set_ylabel("Predicted Seats", fontweight="bold")
 ax.set_title("Comprehensive Comparison: Monte Carlo vs. Deterministic Models 2015", fontsize=13, fontweight="bold")
+
+ax.legend(frameon=True, ncol=2)
+plt.tight_layout()
+plt.show()
+
+# bar chart for 2010
+
+mc_mean_dict_uns10, mc_lo_dict_uns10, mc_hi_dict_uns10, uns_mc_runs10, uns_parties_mc10, uns_seats_mc10 = model_dict(UNS_TEST_SET_0510)
+mc_mean_dict_urs10, mc_lo_dict_urs10, mc_hi_dict_urs10, urs_mc_runs10, urs_parties_mc10, urs_seats_mc10 = model_dict(URS_TEST_SET_0510)
+
+# Get deterministic URS values 
+det_parties_URS10, det_seats_URS10 = URS(GE05_clean, YouGov_05_10_regional_clean, YouGov_05_10_regional_sample_sizes, YouGov_regions, raw=False)
+det_urs10 = dict(zip(det_parties_URS10, det_seats_URS10))
+det_vals_URS10 = [det_urs10.get(p, 0) for p in names]
+
+# Get deterministic UNS values 
+det_parties_UNS10, det_seats_UNS10 = Uniform_Swing(GE05_clean, YouGov_05_10_all_adults_clean, YouGov_05_10_sample_size, raw=False)
+det_uns10 = dict(zip(det_parties_UNS10, det_seats_UNS10))
+det_vals_UNS10 = [det_uns10.get(p, 0) for p in names]
+
+act_parties10, act_counts10 = get_seats(GE10_clean)
+actual10 = dict(zip(act_parties10, act_counts10))
+actual_vals10 = [actual10.get(p, 0) for p in names]  
+
+# building chart 
+
+all_parties = sorted(list(set(
+    list(mc_mean_dict_uns10.keys()) + 
+    list(mc_mean_dict_urs10.keys()) +
+    list(det_urs10.keys()) + 
+    list(det_uns10.keys())
+)))
+
+all_parties.sort(key=lambda p: mc_mean_dict_urs10.get(p, mc_mean_dict_uns10.get(p, 0)), reverse=True)
+
+actual_vals10 = [actual10.get(p, 0) for p in all_parties]  
+
+x = np.arange(len(all_parties))
+w = 0.12
+
+# UNS monte carlo
+uns_mean10 = [mc_mean_dict_uns10.get(p, 0) for p in all_parties]
+uns_lo10   = [mc_mean_dict_uns10.get(p, 0) - mc_lo_dict_uns10.get(p, 0) for p in all_parties]
+uns_hi10   = [mc_hi_dict_uns10.get(p, 0) - mc_mean_dict_uns10.get(p, 0) for p in all_parties]
+
+# URS monte carlo
+urs_mean10 = [mc_mean_dict_urs10.get(p, 0) for p in all_parties]
+urs_lo10   = [mc_mean_dict_urs10.get(p, 0) - mc_lo_dict_urs10.get(p, 0) for p in all_parties]
+urs_hi10  = [mc_hi_dict_urs10.get(p, 0) - mc_mean_dict_urs10.get(p, 0) for p in all_parties]
+
+uns_lo10 = np.clip(uns_lo10, 0, None )
+uns_hi10 = np.clip(uns_hi10, 0, None )
+
+urs_lo10 = np.clip(urs_lo10, 0, None )
+urs_hi10 = np.clip(urs_hi10, 0, None )
+
+# deterministic values
+val_uns10 = [det_uns10.get(p, 0) for p in all_parties]
+val_urs10 = [det_urs10.get(p, 0) for p in all_parties]
+
+fig, ax = plt.subplots(figsize=(16, 6))
+
+ax.bar(x - 1.5*w, uns_mean10,   w, yerr=[uns_lo10, uns_hi10], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, urs_mean10,   w, yerr=[urs_lo10, urs_hi10], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_uns10,    w, color="#C8374A", label="Plain UNS (Det)")
+ax.bar(x + 1.5*w, val_urs10,    w, color="#f1c40f", label="Plain URS (Det)")
+ax.scatter(x, actual_vals10, color="black", marker="*", s=150, zorder=4,
+           label="Actual 2010 result")
+ax.legend()
+
+ax.axhline(326, color="black", linestyle="--", linewidth=1)
+ax.text(len(all_parties) - 0.5, 330, "326 for a majority", ha="right", fontsize=8, fontweight="bold")
+
+ax.set_xticks(x)
+ax.set_xticklabels(all_parties, rotation=45, ha="right")
+ax.set_xlabel("Party", fontweight="bold")
+ax.set_ylabel("Predicted Seats", fontweight="bold")
+ax.set_title("Comprehensive Comparison: Monte Carlo vs. Deterministic Models 2010", fontsize=13, fontweight="bold")
 
 ax.legend(frameon=True, ncol=2)
 plt.tight_layout()
