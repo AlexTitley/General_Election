@@ -1220,7 +1220,8 @@ for name, test_set, seats, parties in zip(MODELS_forstats, TESTS_forstats, SEATS
             print("No two-party coalition is needed in more than 1% of runs")
         
     print("Toss-ups (<50%):", (most_likely < 0.50).sum())
-    print("Marginal (50-70%):", ((most_likely >= 0.50) & (most_likely < 0.70)).sum())
+    print("test (50-60%):", ((most_likely >= 0.50) & (most_likely < 0.60)).sum())
+    print("Marginal (60-70%):", ((most_likely >= 0.60) & (most_likely < 0.70)).sum())
     print("Leaning (70-95%):", ((most_likely >= 0.70) & (most_likely < 0.95)).sum())
     print("Safe (>=95%):", (most_likely >= 0.95).sum())
 
