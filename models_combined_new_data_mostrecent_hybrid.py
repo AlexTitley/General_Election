@@ -1198,10 +1198,10 @@ val_urs10 = [det_urs10.get(p, 0) for p in all_parties]
 
 fig, ax = plt.subplots(figsize=(16, 6))
 
-ax.bar(x - 1.5*w, uns_mean10,   w, yerr=[uns_lo10, uns_hi10], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
-ax.bar(x - 0.5*w, urs_mean10,   w, yerr=[urs_lo10, urs_hi10], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
-ax.bar(x + 0.5*w, val_uns10,    w, color="#C8374A", label="Plain UNS (Det)")
-ax.bar(x + 1.5*w, val_urs10,    w, color="#f1c40f", label="Plain URS (Det)")
+ax.bar(x - 1.5*w, uns_mean10,   w, yerr=[uns_lo10, uns_hi10], capsize=2, color="#A90030", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, urs_mean10,   w, yerr=[urs_lo10, urs_hi10], capsize=2, color="#749400", label="URS (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_uns10,    w, color="#C15C66", label="Plain UNS (Det)")
+ax.bar(x + 1.5*w, val_urs10,    w, color="#b8dd90", label="Plain URS (Det)")
 ax.scatter(x, actual_vals10, color="black", marker="*", s=150, zorder=4,
            label="Actual 2010 result")
 ax.legend()
