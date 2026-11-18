@@ -751,14 +751,14 @@ val_hybrid_det26 = [hybrid_det_dict26.get(p, 0) for p in all_parties]
 
 fig, ax = plt.subplots(figsize=(16, 6))
 
-ax.bar(x - 3.5*w, hybrid_mean26, w, yerr=[hybrid_lo26, hybrid_hi26], capsize=2, color="#5E1468", label="Hybird (Monte Carlo Mean)")
-ax.bar(x - 2.5*w, uns_mean26,   w, yerr=[uns_lo26, uns_hi26], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
-ax.bar(x - 1.5*w, urs_mean26,   w, yerr=[urs_lo26, urs_hi26], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
-ax.bar(x - 0.5*w, rf_mean26,    w, yerr=[rf_lo26, rf_hi26],   capsize=2, color="#2b5c8f", label="RF (Monte Carlo Mean)")
-ax.bar(x + 0.5*w, val_hybrid_det26, w, color="#d9b0fb", label="Hybrid (Det)")
-ax.bar(x + 1.5*w, val_uns26,    w, color="#C8374A", label="Plain UNS (Det)")
-ax.bar(x + 2.5*w, val_urs26,    w, color="#f1c40f", label="Plain URS (Det)")
-ax.bar(x + 3.5*w, val_rf_det26, w, color="#5BAA6A", label="Random Forest (Det)")
+ax.bar(x - 3.5*w, hybrid_mean26, w, yerr=[hybrid_lo26, hybrid_hi26], capsize=2, color="#7E008F", label="Hybrid (Monte Carlo Mean)")
+ax.bar(x - 2.5*w, uns_mean26,   w, yerr=[uns_lo26, uns_hi26], capsize=2, color="#A90030", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 1.5*w, urs_mean26,   w, yerr=[urs_lo26, urs_hi26], capsize=2, color="#749400", label="URS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, rf_mean26,    w, yerr=[rf_lo26, rf_hi26],   capsize=2, color="#3c2398", label="RF (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_hybrid_det26, w, color="#a64ec6", label="Hybrid (Det)")
+ax.bar(x + 1.5*w, val_uns26,    w, color="#C15C66", label="Plain UNS (Det)")
+ax.bar(x + 2.5*w, val_urs26,    w, color="#b8dd90", label="Plain URS (Det)")
+ax.bar(x + 3.5*w, val_rf_det26, w, color="#7579B7", label="Random Forest (Det)")
 
 ax.axhline(326, color="black", linestyle="--", linewidth=1)
 ax.text(len(all_parties) - 0.5, 330, "326 for a majority", ha="right", fontsize=8, fontweight="bold")
@@ -872,14 +872,14 @@ val_hybrid_det24 = [hybrid_det_dict24.get(p, 0) for p in all_parties]
 
 fig, ax = plt.subplots(figsize=(16, 6))
 
-ax.bar(x - 3.5*w, hybrid_mean24, w, yerr=[hybrid_lo24, hybrid_hi24], capsize=2, color="#5E1468", label="Hybird (Monte Carlo Mean)")
-ax.bar(x - 2.5*w, uns_mean24,   w, yerr=[uns_lo24, uns_hi24], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
-ax.bar(x - 1.5*w, urs_mean24,   w, yerr=[urs_lo24, urs_hi24], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
-ax.bar(x - 0.5*w, rf_mean24,    w, yerr=[rf_lo24, rf_hi24],   capsize=2, color="#2b5c8f", label="RF (Monte Carlo Mean)")
-ax.bar(x + 0.5*w, val_hybrid_det24, w, color="#d9b0fb", label="Hybrid (Det)")
-ax.bar(x + 1.5*w, val_uns24,    w, color="#C8374A", label="Plain UNS (Det)")
-ax.bar(x + 2.5*w, val_urs24,    w, color="#f1c40f", label="Plain URS (Det)")
-ax.bar(x + 3.5*w, val_rf_det24, w, color="#5BAA6A", label="Random Forest (Det)")
+ax.bar(x - 3.5*w, hybrid_mean24, w, yerr=[hybrid_lo24, hybrid_hi24], capsize=2, color="#7E008F", label="Hybrid (Monte Carlo Mean)")
+ax.bar(x - 2.5*w, uns_mean24,   w, yerr=[uns_lo24, uns_hi24], capsize=2, color="#A90030", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 1.5*w, urs_mean24,   w, yerr=[urs_lo24, urs_hi24], capsize=2, color="#749400", label="URS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, rf_mean24,    w, yerr=[rf_lo24, rf_hi24],   capsize=2, color="#3c2398", label="RF (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_hybrid_det24, w, color="#a64ec6", label="Hybrid (Det)")
+ax.bar(x + 1.5*w, val_uns24,    w, color="#C15C66", label="Plain UNS (Det)")
+ax.bar(x + 2.5*w, val_urs24,    w, color="#b8dd90", label="Plain URS (Det)")
+ax.bar(x + 3.5*w, val_rf_det24, w, color="#7579B7", label="Random Forest (Det)")
 ax.scatter(names, actual_vals24, color="black", marker="*", s=150, zorder=4,
            label="Actual 2024 result")
 ax.legend()
@@ -957,10 +957,10 @@ print('URS DET VALUES 19:', val_urs19)
 
 fig, ax = plt.subplots(figsize=(16, 6))
 
-ax.bar(x - 1.5*w, uns_mean19,   w, yerr=[uns_lo19, uns_hi19], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
-ax.bar(x - 0.5*w, urs_mean19,   w, yerr=[urs_lo19, urs_hi19], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
-ax.bar(x + 0.5*w, val_uns19,    w, color="#C8374A", label="Plain UNS (Det)")
-ax.bar(x + 1.5*w, val_urs19,    w, color="#f1c40f", label="Plain URS (Det)")
+ax.bar(x - 1.5*w, uns_mean19,   w, yerr=[uns_lo19, uns_hi19], capsize=2, color="#A90030", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, urs_mean19,   w, yerr=[urs_lo19, urs_hi19], capsize=2, color="#749400", label="URS (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_uns19,    w, color="#C15C66", label="Plain UNS (Det)")
+ax.bar(x + 1.5*w, val_urs19,    w, color="#b8dd90", label="Plain URS (Det)")
 ax.scatter(names, actual_vals19, color="black", marker="*", s=150, zorder=4,
            label="Actual 2019 result")
 ax.legend()
@@ -1036,10 +1036,10 @@ val_urs17 = [det_urs17.get(p, 0) for p in all_parties]
 
 fig, ax = plt.subplots(figsize=(16, 6))
 
-ax.bar(x - 1.5*w, uns_mean17,   w, yerr=[uns_lo17, uns_hi17], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
-ax.bar(x - 0.5*w, urs_mean17,   w, yerr=[urs_lo17, urs_hi17], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
-ax.bar(x + 0.5*w, val_uns17,    w, color="#C8374A", label="Plain UNS (Det)")
-ax.bar(x + 1.5*w, val_urs17,    w, color="#f1c40f", label="Plain URS (Det)")
+ax.bar(x - 1.5*w, uns_mean17,   w, yerr=[uns_lo17, uns_hi17], capsize=2, color="#A90030", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, urs_mean17,   w, yerr=[urs_lo17, urs_hi17], capsize=2, color="#749400", label="URS (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_uns17,    w, color="#C15C66", label="Plain UNS (Det)")
+ax.bar(x + 1.5*w, val_urs17,    w, color="#b8dd90", label="Plain URS (Det)")
 ax.scatter(names, actual_vals17, color="black", marker="*", s=150, zorder=4,
            label="Actual 2017 result")
 ax.legend()
@@ -1114,10 +1114,10 @@ val_urs15 = [det_urs15.get(p, 0) for p in all_parties]
 
 fig, ax = plt.subplots(figsize=(16, 6))
 
-ax.bar(x - 1.5*w, uns_mean15,   w, yerr=[uns_lo15, uns_hi15], capsize=2, color="#4A84D4", label="UNS (Monte Carlo Mean)")
-ax.bar(x - 0.5*w, urs_mean15,   w, yerr=[urs_lo15, urs_hi15], capsize=2, color="#E8A844", label="URS (Monte Carlo Mean)")
-ax.bar(x + 0.5*w, val_uns15,    w, color="#C8374A", label="Plain UNS (Det)")
-ax.bar(x + 1.5*w, val_urs15,    w, color="#f1c40f", label="Plain URS (Det)")
+ax.bar(x - 1.5*w, uns_mean15,   w, yerr=[uns_lo15, uns_hi15], capsize=2, color="#A90030", label="UNS (Monte Carlo Mean)")
+ax.bar(x - 0.5*w, urs_mean15,   w, yerr=[urs_lo15, urs_hi15], capsize=2, color="#749400", label="URS (Monte Carlo Mean)")
+ax.bar(x + 0.5*w, val_uns15,    w, color="#C15C66", label="Plain UNS (Det)")
+ax.bar(x + 1.5*w, val_urs15,    w, color="#b8dd90", label="Plain URS (Det)")
 ax.scatter(names, actual_vals15, color="black", marker="*", s=150, zorder=4,
            label="Actual 2015 result")
 ax.legend()
